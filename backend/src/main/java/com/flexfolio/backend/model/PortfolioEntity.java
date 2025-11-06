@@ -19,7 +19,7 @@ public class PortfolioEntity {
 
     @ManyToOne
     @JoinColumn(name = "id", nullable = false)
-    private User user;
+    private UserEntity user;
 
     @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ExperienceEntity> experiences;

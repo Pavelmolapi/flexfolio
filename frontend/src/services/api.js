@@ -103,9 +103,36 @@ const mockUserService = { // Les mêmes fonctions mais en mode simulé
   },
 };
 
-// On choisit: si on est en mode simulé on utilise mockUserService, sinon le vrai
-export const userService = USE_MOCK ? mockUserService : realUserService;
 
-// On exporte aussi l'outil axios configuré, au cas où
+// Auth service for login and forgot password
+const realAuthService = {
+  login: ({ email, password }) => api.post('/auth/login', { email, password }),
+  forgotPassword: ({ email }) => api.post('/auth/forgot-password', { email }),
+};
+
+const mockAuthService = {
+  async login({ email, password }) {
+    await delay();
+    // Accept any email/password for mock, return fake token
+    if (!email || !password) {
+      const err = new Error('Missing credentials');
+      err.response = { status: 400, data: { message: 'Missing credentials' } };
+      throw err;
+    }
+    return { data: { token: 'mock-token', user: { email } } };
+  },
+  async forgotPassword({ email }) {
+    await delay();
+    if (!email) {
+      const err = new Error('Missing email');
+      err.response = { status: 400, data: { message: 'Missing email' } };
+      throw err;
+    }
+    return { data: { message: 'Reset link sent (mock)' } };
+  },
+};
+
+export const userService = USE_MOCK ? mockUserService : realUserService;
+export const authService = USE_MOCK ? mockAuthService : realAuthService;
 export default api;
 

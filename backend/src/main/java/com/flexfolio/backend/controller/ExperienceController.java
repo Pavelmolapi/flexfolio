@@ -1,5 +1,6 @@
 package com.flexfolio.backend.controller;
 
+import com.flexfolio.backend.dto.ExperienceDto;
 import com.flexfolio.backend.model.ExperienceEntity;
 import com.flexfolio.backend.service.ExperienceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +22,9 @@ public class ExperienceController {
      * Create a new experience for a portfolio
      */
     @PostMapping("/{portfolioId}")
-    public ResponseEntity<ExperienceEntity> createExperience(@PathVariable Long portfolioId, @RequestBody ExperienceEntity experience) {
+    public ResponseEntity<ExperienceDto> createExperience(@PathVariable Long portfolioId, @RequestBody ExperienceEntity experience) {
         try {
-            ExperienceEntity createdExperience = experienceService.createExperience(experience, portfolioId);
+            ExperienceDto createdExperience = experienceService.createExperience(experience, portfolioId);
             return new ResponseEntity<>(createdExperience, HttpStatus.CREATED);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -34,7 +35,7 @@ public class ExperienceController {
      * Get experience by ID
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ExperienceEntity> getExperienceById(@PathVariable Long id) {
+    public ResponseEntity<ExperienceDto> getExperienceById(@PathVariable Long id) {
         return experienceService.getExperienceById(id)
             .map(experience -> new ResponseEntity<>(experience, HttpStatus.OK))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -44,8 +45,8 @@ public class ExperienceController {
      * Get all experiences for a portfolio
      */
     @GetMapping("/portfolio/{portfolioId}")
-    public ResponseEntity<List<ExperienceEntity>> getExperiencesByPortfolioId(@PathVariable Long portfolioId) {
-        List<ExperienceEntity> experiences = experienceService.getExperiencesByPortfolioId(portfolioId);
+    public ResponseEntity<List<ExperienceDto>> getExperiencesByPortfolioId(@PathVariable Long portfolioId) {
+        List<ExperienceDto> experiences = experienceService.getExperiencesByPortfolioId(portfolioId);
         return new ResponseEntity<>(experiences, HttpStatus.OK);
     }
 
@@ -53,8 +54,8 @@ public class ExperienceController {
      * Get all experiences
      */
     @GetMapping
-    public ResponseEntity<List<ExperienceEntity>> getAllExperiences() {
-        List<ExperienceEntity> experiences = experienceService.getAllExperiences();
+    public ResponseEntity<List<ExperienceDto>> getAllExperiences() {
+        List<ExperienceDto> experiences = experienceService.getAllExperiences();
         return new ResponseEntity<>(experiences, HttpStatus.OK);
     }
 
@@ -62,9 +63,9 @@ public class ExperienceController {
      * Update experience
      */
     @PutMapping("/{id}")
-    public ResponseEntity<ExperienceEntity> updateExperience(@PathVariable Long id, @RequestBody ExperienceEntity experienceDetails) {
+    public ResponseEntity<ExperienceDto> updateExperience(@PathVariable Long id, @RequestBody ExperienceEntity experienceDetails) {
         try {
-            ExperienceEntity updatedExperience = experienceService.updateExperience(id, experienceDetails);
+            ExperienceDto updatedExperience = experienceService.updateExperience(id, experienceDetails);
             return new ResponseEntity<>(updatedExperience, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

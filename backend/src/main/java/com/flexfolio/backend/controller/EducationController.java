@@ -1,5 +1,6 @@
 package com.flexfolio.backend.controller;
 
+import com.flexfolio.backend.dto.EducationDto;
 import com.flexfolio.backend.model.EducationEntity;
 import com.flexfolio.backend.service.EducationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +22,9 @@ public class EducationController {
      * Create a new education for a portfolio
      */
     @PostMapping("/{portfolioId}")
-    public ResponseEntity<EducationEntity> createEducation(@PathVariable Long portfolioId, @RequestBody EducationEntity education) {
+    public ResponseEntity<EducationDto> createEducation(@PathVariable Long portfolioId, @RequestBody EducationEntity education) {
         try {
-            EducationEntity createdEducation = educationService.createEducation(education, portfolioId);
+            EducationDto createdEducation = educationService.createEducation(education, portfolioId);
             return new ResponseEntity<>(createdEducation, HttpStatus.CREATED);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -34,7 +35,7 @@ public class EducationController {
      * Get education by ID
      */
     @GetMapping("/{id}")
-    public ResponseEntity<EducationEntity> getEducationById(@PathVariable Long id) {
+    public ResponseEntity<EducationDto> getEducationById(@PathVariable Long id) {
         return educationService.getEducationById(id)
             .map(education -> new ResponseEntity<>(education, HttpStatus.OK))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -44,8 +45,8 @@ public class EducationController {
      * Get all educations for a portfolio
      */
     @GetMapping("/portfolio/{portfolioId}")
-    public ResponseEntity<List<EducationEntity>> getEducationsByPortfolioId(@PathVariable Long portfolioId) {
-        List<EducationEntity> educations = educationService.getEducationsByPortfolioId(portfolioId);
+    public ResponseEntity<List<EducationDto>> getEducationsByPortfolioId(@PathVariable Long portfolioId) {
+        List<EducationDto> educations = educationService.getEducationsByPortfolioId(portfolioId);
         return new ResponseEntity<>(educations, HttpStatus.OK);
     }
 
@@ -53,8 +54,8 @@ public class EducationController {
      * Get all educations
      */
     @GetMapping
-    public ResponseEntity<List<EducationEntity>> getAllEducations() {
-        List<EducationEntity> educations = educationService.getAllEducations();
+    public ResponseEntity<List<EducationDto>> getAllEducations() {
+        List<EducationDto> educations = educationService.getAllEducations();
         return new ResponseEntity<>(educations, HttpStatus.OK);
     }
 
@@ -62,9 +63,9 @@ public class EducationController {
      * Update education
      */
     @PutMapping("/{id}")
-    public ResponseEntity<EducationEntity> updateEducation(@PathVariable Long id, @RequestBody EducationEntity educationDetails) {
+    public ResponseEntity<EducationDto> updateEducation(@PathVariable Long id, @RequestBody EducationEntity educationDetails) {
         try {
-            EducationEntity updatedEducation = educationService.updateEducation(id, educationDetails);
+            EducationDto updatedEducation = educationService.updateEducation(id, educationDetails);
             return new ResponseEntity<>(updatedEducation, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -80,4 +81,5 @@ public class EducationController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
+
 

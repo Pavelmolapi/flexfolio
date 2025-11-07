@@ -1,60 +1,67 @@
 package com.flexfolio.backend.service;
 
+import com.flexfolio.backend.dto.EducationDto;
+import com.flexfolio.backend.mapper.EntityMapper;
 import com.flexfolio.backend.model.EducationEntity;
 import com.flexfolio.backend.model.PortfolioEntity;
 import com.flexfolio.backend.repository.EducationRepository;
 import com.flexfolio.backend.repository.PortfolioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class EducationService {
 
-    @Autowired
-    private EducationRepository educationRepository;
+    private final EducationRepository educationRepository;
 
-    @Autowired
-    private PortfolioRepository portfolioRepository;
+    private final PortfolioRepository portfolioRepository;
+
+    private final EntityMapper entityMapper;
 
     /**
      * Create a new education for a portfolio
      */
-    public EducationEntity createEducation(EducationEntity education, Long portfolioId) {
+    public EducationDto createEducation(EducationEntity education, Long portfolioId) {
         PortfolioEntity portfolio = portfolioRepository.findById(portfolioId)
             .orElseThrow(() -> new RuntimeException("Portfolio not found with id: " + portfolioId));
         education.setPortfolio(portfolio);
         education.validateOngoing();
-        return educationRepository.save(education);
+        EducationEntity savedEducation = educationRepository.save(education);
+        return entityMapper.toEducationDto(savedEducation);
     }
 
     /**
      * Get education by ID
      */
-    public Optional<EducationEntity> getEducationById(Long id) {
-        return educationRepository.findById(id);
+    public Optional<EducationDto> getEducationById(Long id) {
+        return educationRepository.findById(id)
+            .map(entityMapper::toEducationDto);
     }
 
     /**
      * Get all educations for a specific portfolio
      */
-    public List<EducationEntity> getEducationsByPortfolioId(Long portfolioId) {
-        return educationRepository.findByPortfolioId(portfolioId);
+    public List<EducationDto> getEducationsByPortfolioId(Long portfolioId) {
+        List<EducationEntity> educations = educationRepository.findByPortfolioId(portfolioId);
+        return entityMapper.toEducationDtoList(educations);
     }
 
     /**
      * Get all educations
      */
-    public List<EducationEntity> getAllEducations() {
-        return educationRepository.findAll();
+    public List<EducationDto> getAllEducations() {
+        List<EducationEntity> educations = educationRepository.findAll();
+        return entityMapper.toEducationDtoList(educations);
     }
 
     /**
      * Update education
      */
-    public EducationEntity updateEducation(Long id, EducationEntity educationDetails) {
-        return educationRepository.findById(id).map(education -> {
+    public EducationDto updateEducation(Long id, EducationEntity educationDetails) {
+        EducationEntity updatedEducation = educationRepository.findById(id).map(education -> {
             if (educationDetails.getTitleOfQualification() != null) {
                 education.setTitleOfQualification(educationDetails.getTitleOfQualification());
             }
@@ -79,6 +86,8 @@ public class EducationService {
             education.validateOngoing();
             return educationRepository.save(education);
         }).orElseThrow(() -> new RuntimeException("Education not found with id: " + id));
+
+        return entityMapper.toEducationDto(updatedEducation);
     }
 
     /**

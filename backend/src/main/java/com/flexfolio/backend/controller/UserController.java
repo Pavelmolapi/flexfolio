@@ -1,5 +1,6 @@
 package com.flexfolio.backend.controller;
 
+import com.flexfolio.backend.dto.UserDto;
 import com.flexfolio.backend.model.UserEntity;
 import com.flexfolio.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,20 +18,12 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    /**
-     * Create a new user
-     */
-    @PostMapping
-    public ResponseEntity<UserEntity> createUser(@RequestBody UserEntity user) {
-        UserEntity createdUser = userService.createUser(user);
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
-    }
 
     /**
      * Get user by ID
      */
     @GetMapping("/{id}")
-    public ResponseEntity<UserEntity> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
         return userService.getUserById(id)
             .map(user -> new ResponseEntity<>(user, HttpStatus.OK))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -40,8 +33,8 @@ public class UserController {
      * Get all users
      */
     @GetMapping
-    public ResponseEntity<List<UserEntity>> getAllUsers() {
-        List<UserEntity> users = userService.getAllUsers();
+    public ResponseEntity<List<UserDto>> getAllUsers() {
+        List<UserDto> users = userService.getAllUsers();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
@@ -49,9 +42,9 @@ public class UserController {
      * Update user
      */
     @PutMapping("/{id}")
-    public ResponseEntity<UserEntity> updateUser(@PathVariable Long id, @RequestBody UserEntity userDetails) {
+    public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @RequestBody UserEntity userDetails) {
         try {
-            UserEntity updatedUser = userService.updateUser(id, userDetails);
+            UserDto updatedUser = userService.updateUser(id, userDetails);
             return new ResponseEntity<>(updatedUser, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

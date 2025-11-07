@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { userService } from '../services/api';
 import './UserForm.css';
 
-// Objectif du fichier: afficher un petit formulaire d'inscription simple (email + mot de passe)
-// Ce formulaire sert à créer un nouvel utilisateur
 function UserForm() {
   // Champs saisis par l'utilisateur
   const [email, setEmail] = useState('');

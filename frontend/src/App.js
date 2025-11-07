@@ -1,8 +1,8 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
-import UserList from './components/UserList';
-import UserForm from './components/UserForm';
+import Login from './components/Login';
+import ForgotPassword from './components/ForgotPassword';
 
 function App() {
   return (
@@ -10,30 +10,17 @@ function App() {
       <div className="App">
         <header className="App-header">
           <h1>FlexFolio</h1>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/users">Users</Link>
-            <Link to="/add-user">Add User</Link>
-          </nav>
         </header>
         <main className="App-main">
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/users" element={<UserList />} />
-            <Route path="/add-user" element={<UserForm />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </main>
       </div>
     </Router>
-  );
-}
-
-function Home() {
-  return (
-    <div className="home">
-      <h2>Welcome to FlexFolio</h2>
-      <p>A React + Spring Boot application</p>
-    </div>
   );
 }
 

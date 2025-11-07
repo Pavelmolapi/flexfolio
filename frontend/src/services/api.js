@@ -17,4 +17,9 @@ export const userService = {
   deleteUser: (id) => api.delete(`/users/${id}`),
 };
 
+export const authService = {
+  login: ({ email, password }) => api.post('/auth/login', { email, password }),
+  forgotPassword: ({ email }) => api.post('/auth/forgot-password', { email }),
+};
+
 export default api;

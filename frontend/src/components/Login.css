@@ -1,0 +1,133 @@
+/* Conteneur pleine hauteur centré */
+html, body { /* Applique 100% de hauteur à la page */
+  height: 100%; /* Hauteur totale */
+}
+
+.login-container { /* Conteneur principal centré */
+  min-height: 100vh; /* Occupe toute la hauteur de la fenêtre */
+  display: flex; /* Utilise Flexbox pour l'alignement */
+  align-items: center; /* Centre verticalement */
+  justify-content: center; /* Centre horizontalement */
+  background: #f5f7fb; /* Couleur d'arrière-plan douce */
+  padding: 24px; /* Espacement autour de la carte */
+}
+
+.login-card { /* Carte contenant le formulaire */
+  width: 100%; /* Prend toute la largeur disponible par défaut */
+  max-width: 420px; /* Limite la largeur pour une bonne lisibilité */
+  background: #ffffff; /* Fond blanc pour la carte */
+  border: 2px solid #9ca3af; /* Bordure grise renforcée */
+  border-radius: 12px; /* Coins arrondis agréables */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.06); /* Ombre subtile */
+  padding: 28px; /* Espacement interne */
+}
+
+.login-title { /* Titre principal */
+  margin: 0 0 16px 0; /* Espace sous le titre */
+  font-size: 24px; /* Taille de police du titre */
+  font-weight: 700; /* Police en gras */
+  color: #111827; /* Couleur sombre pour le texte */
+  text-align: center; /* Centre le titre */
+}
+
+.login-form { /* Formulaire de connexion */
+  display: flex; /* Utilise une colonne Flex */
+  flex-direction: column; /* Aligne verticalement les champs */
+  gap: 12px; /* Espace entre les éléments du formulaire */
+}
+
+.login-label { /* Libellés des champs */
+  font-size: 14px; /* Taille de police discrète */
+  color: #374151; /* Gris foncé pour le label */
+}
+
+.login-input { /* Champs de saisie */
+  padding: 10px 12px; /* Espacement interne du champ */
+  border: 2px solid #9ca3af; /* Bordure grise renforcée */
+  border-radius: 8px; /* Coins arrondis du champ */
+  outline: none; /* Supprime l'outline par défaut */
+  font-size: 14px; /* Taille de police du champ */
+  transition: border-color 0.2s ease; /* Animation légère sur le focus */
+}
+
+.login-input:focus { /* Style lors du focus */
+  border-color: #4f46e5; /* Bordure violette plus marquée en focus */
+  border-width: 2px; /* Épaisseur maintenue en focus */
+}
+
+.password-wrapper { /* Ligne contenant le champ et le bouton */
+  display: flex; /* Aligne horizontalement */
+  gap: 8px; /* Espace entre l'input et le bouton */
+}
+
+.toggle-password { /* Bouton d'affichage du mot de passe */
+  padding: 0 12px; /* Espacement horizontal interne */
+  border: none; /* Retire la bordure */
+  background: #f9fafb; /* Légère teinte de fond */
+  color: #111827; /* Couleur du texte du bouton */
+  border-radius: 8px; /* Coins arrondis du bouton */
+  cursor: pointer; /* Curseur en forme de main */
+  font-size: 12px; /* Petite police pour le bouton */
+}
+
+.toggle-password:hover { /* Style au survol */
+  background: #eef2ff; /* Teinte légèrement plus colorée */
+  /* Pas de bordure au survol */
+}
+
+.login-submit { /* Bouton de soumission */
+  margin-top: 8px; /* Espace au-dessus du bouton */
+  padding: 10px 12px; /* Espacement du bouton */
+  background: #4f46e5; /* Couleur primaire */
+  color: #ffffff; /* Texte en blanc */
+  border: none; /* Supprime la bordure native */
+  border-radius: 8px; /* Coins arrondis */
+  cursor: pointer; /* Curseur en forme de main */
+  font-weight: 600; /* Texte un peu plus gras */
+}
+
+.login-submit:hover { /* Effet hover du bouton */
+  background: #4338ca; /* Légère variation au survol */
+}
+
+.login-error { /* Message d'erreur */
+  margin-top: 8px; /* Espace au-dessus */
+  padding: 10px 12px; /* Espacement interne */
+  background: #fef2f2; /* Fond rouge très clair */
+  color: #991b1b; /* Texte rouge foncé */
+  border: 2px solid #fca5a5; /* Bordure rouge renforcée */
+  border-radius: 8px; /* Coins arrondis */
+  font-size: 14px; /* Taille de police */
+}
+
+.login-success { /* Message de succès */
+  margin-top: 8px; /* Espace au-dessus */
+  padding: 10px 12px; /* Espacement interne */
+  background: #ecfdf5; /* Fond vert très clair */
+  color: #065f46; /* Texte vert foncé */
+  border: 2px solid #34d399; /* Bordure verte renforcée */
+  border-radius: 8px; /* Coins arrondis */
+  font-size: 14px; /* Taille de police */
+}
+
+.login-links { /* Conteneur des liens secondaires */
+  margin-top: 16px; /* Espace au-dessus des liens */
+  display: flex; /* Alignement en ligne */
+  align-items: center; /* Centre verticalement */
+  justify-content: center; /* Centre horizontalement */
+  gap: 8px; /* Espace entre éléments */
+}
+
+.login-link { /* Style des liens */
+  color: #4f46e5; /* Couleur primaire des liens */
+  text-decoration: none; /* Retire le soulignement par défaut */
+  font-size: 14px; /* Taille de police des liens */
+}
+
+.login-link:hover { /* Style au survol des liens */
+  text-decoration: underline; /* Ajoute un soulignement */
+}
+
+.divider { /* Style du séparateur entre les liens */
+  color: #9ca3af; /* Gris neutre */
+}

@@ -1,20 +1,111 @@
 import axios from 'axios';
+// Importe la bibliothèque axios pour effectuer des requêtes HTTP
+// axios est un outil qui nous aide à parler avec le serveur (par internet)
+// Ici on règle comment on parle au serveur
+// Entités et rôles (en mots simples):
+// - axios: l'outil pour envoyer des demandes au serveur.
+// - api: la version d'axios déjà réglée avec l'adresse du serveur.
+// - realUserService: les fonctions qui parlent au vrai serveur.
+// - mockUserService: les mêmes fonctions mais en mode simulé (dans le navigateur).
+// - LS_KEY: le nom sous lequel on sauvegarde la liste d'utilisateurs en mode simulé.
+// - readUsers / writeUsers: lire/écrire la liste d'utilisateurs en mode simulé.
+// - delay: petite attente pour imiter internet.
+const USE_MOCK = process.env.REACT_APP_USE_MOCK === 'true'; // Lit la variable d'environnement pour savoir si on utilise le mode mock (localStorage)
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api'; // Base URL de l'API backend, par défaut localhost
 
-const API_BASE_URL = 'http://localhost:8080/api';
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
+const api = axios.create({ // On prépare axios avec l'adresse du serveur
+  baseURL: API_BASE_URL, // L'adresse du serveur à contacter
   headers: {
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/json', // On envoie/ reçoit des infos en JSON (format texte)
   },
 });
 
-export const userService = {
-  getAllUsers: () => api.get('/users'),
-  getUserById: (id) => api.get(`/users/${id}`),
-  createUser: (user) => api.post('/users', user),
-  updateUser: (id, user) => api.put(`/users/${id}`, user),
-  deleteUser: (id) => api.delete(`/users/${id}`),
+// On définit des fonctions qui parlent au vrai serveur
+const realUserService = {
+  getAllUsers: () => api.get('/users'), // Demande la liste de tous les utilisateurs
+  getUserById: (id) => api.get(`/users/${id}`), // Demande les infos d'un utilisateur précis
+  createUser: (user) => api.post('/users', user), // Demande de créer un nouvel utilisateur
+  updateUser: (id, user) => api.put(`/users/${id}`, user), // Demande de modifier un utilisateur
+  deleteUser: (id) => api.delete(`/users/${id}`), // Demande de supprimer un utilisateur
 };
 
+// On a aussi un mode "simulé" (sans vrai serveur), stocké dans le navigateur
+const LS_KEY = 'ff_users'; // Nom utilisé pour sauvegarder dans le navigateur
+// Petites aides pour lire/écrire et attendre un peu (comme un vrai réseau)
+const readUsers = () => { // Lire la liste des utilisateurs depuis le navigateur
+  try {
+    const raw = localStorage.getItem(LS_KEY); // On récupère ce qui est stocké
+    return raw ? JSON.parse(raw) : []; // On transforme le texte en liste, sinon liste vide
+  } catch (_) {
+    return []; // Si problème, on renvoie une liste vide
+  }
+};
+const writeUsers = (users) => { // Écrire la liste d'utilisateurs dans le navigateur
+  localStorage.setItem(LS_KEY, JSON.stringify(users)); // On transforme en texte et on sauvegarde
+};
+const delay = (ms = 200) => new Promise((res) => setTimeout(res, ms)); // Petite attente pour faire comme si le réseau prenait du temps
+
+const mockUserService = { // Les mêmes fonctions mais en mode simulé
+  async getAllUsers() { // Donner la liste des utilisateurs
+    await delay(); // On attend un peu
+    const data = readUsers(); // On lit ce qui est stocké
+    return { data }; // On renvoie la liste
+  },
+  async getUserById(id) { // Donner un utilisateur précis
+    await delay(); // On attend un peu
+    const users = readUsers(); // On lit la liste
+    const user = users.find((u) => String(u.id) === String(id)); // On cherche par identifiant
+    if (!user) { // Si on ne trouve pas
+      return { data: null }; // On dit qu'il n'y a rien
+    }
+    return { data: user }; // On renvoie l'utilisateur trouvé
+  },
+  async createUser(user) { // Ajouter un nouvel utilisateur
+    await delay(); // On attend un peu
+    const users = readUsers(); // On lit la liste
+    const nextId = users.length ? Math.max(...users.map((u) => Number(u.id) || 0)) + 1 : 1; // On calcule un nouvel identifiant
+    const newUser = { id: nextId, name: user.name, email: user.email, ...user }; // On prépare l'utilisateur à ajouter
+    // On évite d'avoir deux fois le même email
+    if (users.some((u) => u.email === newUser.email)) { // Si l'email existe déjà
+      const err = new Error('Email already exists'); // On crée une erreur
+      err.response = { status: 400, data: { message: 'Email already exists' } }; // On précise le message
+      throw err; // On arrête et on renvoie l'erreur
+    }
+    users.push(newUser); // On ajoute dans la liste
+    writeUsers(users); // On sauvegarde
+    return { data: newUser }; // On renvoie l'utilisateur créé
+  },
+  async updateUser(id, user) { // Modifier un utilisateur existant
+    await delay(); // On attend un peu
+    const users = readUsers(); // On lit la liste
+    const idx = users.findIndex((u) => String(u.id) === String(id)); // On cherche où il est
+    if (idx === -1) { // Si on ne le trouve pas
+      const err = new Error('User not found'); // On dit qu'il n'existe pas
+      err.response = { status: 404 }; // On précise le type d'erreur
+      throw err; // On arrête et on renvoie l'erreur
+    }
+    // On vérifie que l'email ne soit pas déjà pris par quelqu'un d'autre
+    if (user.email && users.some((u, i) => i !== idx && u.email === user.email)) {
+      const err = new Error('Email already exists'); // Email déjà pris
+      err.response = { status: 400 };
+      throw err;
+    }
+    users[idx] = { ...users[idx], ...user, id: users[idx].id }; // On met à jour ses infos (on garde le même id)
+    writeUsers(users); // On sauvegarde
+    return { data: users[idx] }; // On renvoie l'utilisateur mis à jour
+  },
+  async deleteUser(id) { // Supprimer un utilisateur
+    await delay(); // On attend un peu
+    const users = readUsers(); // On lit la liste
+    const filtered = users.filter((u) => String(u.id) !== String(id)); // On enlève celui qui correspond
+    writeUsers(filtered); // On sauvegarde la nouvelle liste
+    return { data: {} }; // On renvoie un petit objet vide pour dire "c'est bon"
+  },
+};
+
+// On choisit: si on est en mode simulé on utilise mockUserService, sinon le vrai
+export const userService = USE_MOCK ? mockUserService : realUserService;
+
+// On exporte aussi l'outil axios configuré, au cas où
 export default api;
+

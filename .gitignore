@@ -1,9 +1,28 @@
-# IntelliJ IDEA
-.idea/
+# Ignore local database files
+backend/data/
 
-# VS Code
+# Maven / Java
+**/target/
+*.log
+
+# IDEs
+*.iml
+.idea/
 .vscode/
+.classpath
+.project
+
+# Node
+node_modules/
 
 # OS
 .DS_Store
 Thumbs.db
+
+# Env
+.env
+
+# Others
+npm-debug.log
+yarn-error.log
+

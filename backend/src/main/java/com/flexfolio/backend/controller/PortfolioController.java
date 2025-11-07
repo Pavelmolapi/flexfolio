@@ -1,5 +1,6 @@
 package com.flexfolio.backend.controller;
 
+import com.flexfolio.backend.dto.PortfolioDto;
 import com.flexfolio.backend.model.PortfolioEntity;
 import com.flexfolio.backend.service.PortfolioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +22,9 @@ public class PortfolioController {
      * Create a new portfolio for a user
      */
     @PostMapping("/{userId}")
-    public ResponseEntity<PortfolioEntity> createPortfolio(@PathVariable Long userId, @RequestBody PortfolioEntity portfolio) {
+    public ResponseEntity<PortfolioDto> createPortfolio(@PathVariable Long userId, @RequestBody PortfolioEntity portfolio) {
         try {
-            PortfolioEntity createdPortfolio = portfolioService.createPortfolio(portfolio, userId);
+            PortfolioDto createdPortfolio = portfolioService.createPortfolio(portfolio, userId);
             return new ResponseEntity<>(createdPortfolio, HttpStatus.CREATED);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -34,7 +35,7 @@ public class PortfolioController {
      * Get portfolio by ID
      */
     @GetMapping("/{id}")
-    public ResponseEntity<PortfolioEntity> getPortfolioById(@PathVariable Long id) {
+    public ResponseEntity<PortfolioDto> getPortfolioById(@PathVariable Long id) {
         return portfolioService.getPortfolioById(id)
             .map(portfolio -> new ResponseEntity<>(portfolio, HttpStatus.OK))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -44,8 +45,8 @@ public class PortfolioController {
      * Get all portfolios for a user
      */
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<PortfolioEntity>> getPortfoliosByUserId(@PathVariable Long userId) {
-        List<PortfolioEntity> portfolios = portfolioService.getPortfoliosByUserId(userId);
+    public ResponseEntity<List<PortfolioDto>> getPortfoliosByUserId(@PathVariable Long userId) {
+        List<PortfolioDto> portfolios = portfolioService.getPortfoliosByUserId(userId);
         return new ResponseEntity<>(portfolios, HttpStatus.OK);
     }
 
@@ -53,8 +54,8 @@ public class PortfolioController {
      * Get all portfolios
      */
     @GetMapping
-    public ResponseEntity<List<PortfolioEntity>> getAllPortfolios() {
-        List<PortfolioEntity> portfolios = portfolioService.getAllPortfolios();
+    public ResponseEntity<List<PortfolioDto>> getAllPortfolios() {
+        List<PortfolioDto> portfolios = portfolioService.getAllPortfolios();
         return new ResponseEntity<>(portfolios, HttpStatus.OK);
     }
 
@@ -62,9 +63,9 @@ public class PortfolioController {
      * Update portfolio
      */
     @PutMapping("/{id}")
-    public ResponseEntity<PortfolioEntity> updatePortfolio(@PathVariable Long id, @RequestBody PortfolioEntity portfolioDetails) {
+    public ResponseEntity<PortfolioDto> updatePortfolio(@PathVariable Long id, @RequestBody PortfolioEntity portfolioDetails) {
         try {
-            PortfolioEntity updatedPortfolio = portfolioService.updatePortfolio(id, portfolioDetails);
+            PortfolioDto updatedPortfolio = portfolioService.updatePortfolio(id, portfolioDetails);
             return new ResponseEntity<>(updatedPortfolio, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -80,4 +81,5 @@ public class PortfolioController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
+
 

@@ -2,7 +2,9 @@ import React from 'react';
 import './App.css';
 import PortfolioHub from './components/PortfolioHub';
 import UserForm from './components/UserForm';
-import { Routes, Route } from 'react-router-dom';
+import Login from './components/Login';
+import ForgotPassword from './components/ForgotPassword';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 // Entités et rôles (en mots simples):
 // - React: permet d'écrire l'interface.
@@ -23,9 +25,11 @@ function App() {
       <main className="App-main">
         {/* Ici, on choisit quoi afficher selon l'adresse */}
         <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
           {/* Accueil: la page avec 2 boutons (portfolio) */}
-          <Route path="/" element={<PortfolioHub />} />
-          {/* Page portfolio simple */}
           <Route path="/portfolio" element={<PortfolioHub />} />
           {/* Page de création d'utilisateur */}
           <Route path="/user" element={<UserForm />} />

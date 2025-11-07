@@ -7,6 +7,5 @@ import java.util.List;
 
 @Repository
 public interface EducationRepository extends JpaRepository<EducationEntity, Long> {
-    List<EducationEntity> findByPortfolioId(Long portfolioId);
+    List<EducationEntity> findByPortfolioId(Long id);
 }
-

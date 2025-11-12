@@ -1,93 +1,117 @@
-# FlexFolio — Backend & Frontend Summary
+<div align="center">
+  <h1>🌟 FlexFolio 🌟</h1>
+  <p>
+    <strong>A full-stack application with React frontend and Spring Boot backend</strong>
+  </p>
 
-This repository contains the FlexFolio full-stack application: a React frontend and a Spring Boot backend. The README below focuses on the backend implementation, how the pieces fit together, how to run the project, and what to do to remove large/unnecessary tracked files (for example `backend/data`).
-
----
-
-## Quick Status
-- Project: FlexFolio
-- Backend: Spring Boot (Java 17)
-- Frontend: React
-- DB: PostgreSQL (Docker-friendly)
-- Auth: JWT (JJWT + Spring Security)
-
----
-
-## What this project contains (high-level)
-- Entities: User, Portfolio, Experience, Education
-- DTO layer with mappers (Entity ↔ DTO)
-- Repositories: Spring Data JPA repositories for each entity
-- Services: Business logic, validation, transactional boundaries
-- Controllers: REST endpoints for auth, users, portfolios, experiences, educations
-- Security: JWT token provider, authentication filter, security config
-- Postman collections and API guides in project root
+  ![GitHub repo size](https://img.shields.io/github/repo-size/yourusername/FlexFolio)
+  ![GitHub stars](https://img.shields.io/github/stars/yourusername/FlexFolio?style=social)
+  ![GitHub forks](https://img.shields.io/github/forks/yourusername/FlexFolio?style=social)
+  ![GitHub issues](https://img.shields.io/github/issues/yourusername/FlexFolio)
+  ![GitHub license](https://img.shields.io/github/license/yourusername/FlexFolio)
+</div>
 
 ---
 
-## Project flow (A → Z)
-1. Client (React or Postman) sends HTTP request (JSON).
-2. Controller receives DTO, validates input, calls Service.
-3. Service contains business logic, uses Mapper to convert DTO ↔ Entity, calls Repository.
-4. Repository persists Entities to PostgreSQL.
-5. Mapper converts Entities to DTOs returned by controllers.
-6. Security: AuthenticationController issues JWT on login; Jwt filter validates token on protected routes.
-
----
-
-## Key Files & Structure (backend)
-- `src/main/java/com/flexfolio/backend/model/` — Entities:
-  - `UserEntity` (table `User_`) — id, email (unique), password (BCrypt), createdAt, portfolios
-  - `PortfolioEntity` (`Portfolio`) — idPortfolio, user (ManyToOne), experiences (OneToMany), educations (OneToMany)
-  - `ExperienceEntity` (`Experience`) — idExp, position, employer, city, country, startDate, endDate, ongoing, responsibilities, portfolio (ManyToOne)
-  - `EducationEntity` (`Education`) — idEdu, titleOfQualification, training, ongoing, city, country, startDate, endDate, portfolio
-- `repository/` — Spring Data JPA repositories for each entity
-- `service/` — Services encapsulating business logic
-- `controller/` — REST controllers (AuthenticationController handles register/login)
-- `dto/` and `mapper/` — DTO classes and EntityMapper to convert between DTOs and Entities
-- `security/` — `JwtTokenProvider`, `JwtAuthenticationFilter`, `CustomUserDetailsService`, `SecurityConfig`
-
----
-
-## Important Implementation Notes
-- DTOs are used in controllers to avoid exposing JPA entities directly.
-- The `EntityMapper` converts between Entities and DTOs, formats dates, and prevents circular references.
-- `PortfolioEntity` cascades deletes to experiences and educations (cascade = ALL, orphanRemoval = true).
-- `ExperienceEntity` and `EducationEntity` include `ongoing` logic (if ongoing is true, `endDate` is set to null).
-- Passwords must be saved encoded via BCrypt. Authentication endpoints are centralized in `AuthenticationController`.
-- JWT: ensure the JJWT dependency version matches the code (use 0.11.x or later for `Jwts.parserBuilder()` and related APIs).
-
----
-
-## How to run (backend)
-Prerequisites:
-- Java 17
-- Maven
-- Docker (recommended for PostgreSQL)
-
-1) Start PostgreSQL (via docker-compose in `backend/docker-compose.yml`) or run a local Postgres instance.
-
-2) Build & run backend:
+## 📂 Project Structure
 
 ```bash
-cd backend
-mvn clean install
-mvn spring-boot:run
+flexfolio/
+├── backend/          # 🚀 Spring Boot backend
+└── frontend/         # ✨ React frontend
+
+🛠 Backend (Spring Boot)
+📋 Prerequisites
+
+Java 17 or higher
+Maven 3.6+
+
+🚀 Running the Backend
+
+Navigate to the backend directory:
+bash Copiercd backend
+
+Run the application:
+bash Copiermvn spring-boot\:run
+The backend will start on http://localhost:8080
+
+📡 API Endpoints
+MethodEndpointDescriptionGET/api/usersGet all usersGET/api/users/{id}Get user by IDPOST/api/usersCreate a new userPUT/api/users/{id}Update a userDELETE/api/users/{id}Delete a user
+🗄 H2 Console
+Access the H2 database console at http://localhost:8080/h2-console
+
+JDBC URL: jdbc:h2:mem:flexfoliodb
+Username: sa
+Password: (leave blank)
+
+
+🎨 Frontend (React)
+📋 Prerequisites
+
+Node.js 16+ and npm
+
+🚀 Running the Frontend
+
+Navigate to the frontend directory:
+bash Copiercd frontend
+
+Install dependencies:
+bash Copiernpm install
+
+Start the development server:
+bash Copiernpm start
+The frontend will start on http://localhost:3000
+
+
+✨ Features
+
+User Management: Create, read, update, and delete users
+RESTful API: Clean REST API architecture
+Responsive UI: Modern React interface with routing
+CORS Enabled: Frontend and backend communication configured
+H2 Database: In-memory database for development
+
+
+🛠 Technology Stack
+Backend
+
+Spring Boot 3.2.0
+Spring Data JPA
+H2 Database
+Lombok
+Maven
+
+Frontend
+
+React 18
+React Router DOM
+Axios
+CSS3
+
+
+🚀 Getting Started
+
+Start the backend server (port 8080)
+Start the frontend development server (port 3000)
+Open http://localhost:3000 in your browser
+Navigate through the application to manage users
+
+
+🔧 Development
+
+Backend API runs on port 8080
+Frontend dev server runs on port 3000
+CORS is configured to allow requests from localhost:3000
+
+
+🤝 Contributing
+Contributions are welcome! Please fork this repository and submit a pull request.
+
+📜 License
+This project is licensed under the MIT License.
+
+<div align="center">
+  <img src="https://media.giphy.com/media/l0HlNaQ6gWfllcjDO/giphy.gif" width="200" />
+  <p>Made with ❤️ by <a href="https://github.com/yourusername">@yourusername</a></p>
+</div>
 ```
-
-By default the app runs on `http://localhost:8080`.
-
----
-
-## Common Postman flows (short)
-1. Register: POST `/api/auth/register` — body: `{ "email":"...","password":"..." }`.
-2. Login: POST `/api/auth/login` — body: `{ "email":"...","password":"..." }`. Response must include a JWT (token) in the response body (or in an `Authorization` header). Copy token.
-3. Use protected endpoints: include header `Authorization: Bearer <token>`.
-
-Endpoints you will typically use:
-- Auth: `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/validate`
-- Users: CRUD endpoints (protected except register)
-- Portfolios: CRUD endpoints (protected)
-- Experiences: CRUD endpoints (protected)
-- Educations: CRUD endpoints (protected)
-
----

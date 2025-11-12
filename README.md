@@ -1,93 +1,140 @@
-# FlexFolio — Backend & Frontend Summary
+<div align="center">
+  <h1>🌟 FlexFolio 🌟</h1>
+  <p>
+    <strong>A full-stack application with React frontend and Spring Boot backend</strong>
+  </p>
 
-This repository contains the FlexFolio full-stack application: a React frontend and a Spring Boot backend. The README below focuses on the backend implementation, how the pieces fit together, how to run the project, and what to do to remove large/unnecessary tracked files (for example `backend/data`).
-
----
-
-## Quick Status
-- Project: FlexFolio
-- Backend: Spring Boot (Java 17)
-- Frontend: React
-- DB: PostgreSQL (Docker-friendly)
-- Auth: JWT (JJWT + Spring Security)
-
----
-
-## What this project contains (high-level)
-- Entities: User, Portfolio, Experience, Education
-- DTO layer with mappers (Entity ↔ DTO)
-- Repositories: Spring Data JPA repositories for each entity
-- Services: Business logic, validation, transactional boundaries
-- Controllers: REST endpoints for auth, users, portfolios, experiences, educations
-- Security: JWT token provider, authentication filter, security config
-- Postman collections and API guides in project root
+  ![GitHub stars](https://img.shields.io/github/stars/yourusername/flexfolio?style=social)
+  ![GitHub forks](https://img.shields.io/github/forks/yourusername/flexfolio?style=social)
+  ![License](https://img.shields.io/badge/license-MIT-green)
+  ![Java](https://img.shields.io/badge/Java-17+-orange)
+  ![React](https://img.shields.io/badge/React-18-blue)
+  ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-green)
+</div>
 
 ---
 
-## Project flow (A → Z)
-1. Client (React or Postman) sends HTTP request (JSON).
-2. Controller receives DTO, validates input, calls Service.
-3. Service contains business logic, uses Mapper to convert DTO ↔ Entity, calls Repository.
-4. Repository persists Entities to PostgreSQL.
-5. Mapper converts Entities to DTOs returned by controllers.
-6. Security: AuthenticationController issues JWT on login; Jwt filter validates token on protected routes.
+## 🎯 **Project Overview**
+FlexFolio est une application full-stack conçue pour gérer des utilisateurs avec une interface moderne et une API RESTful. Elle combine la puissance de **Spring Boot** pour le backend et **React** pour le frontend.
+
+<div align="center">
+  <img src="https://media.giphy.com/media/3o7TKSQ5rNQXuQjJ3C/giphy.gif" width="400" alt="FlexFolio Demo" />
+  <p><em>Démonstration de l'application (à remplacer par une capture réelle)</em></p>
+</div>
 
 ---
 
-## Key Files & Structure (backend)
-- `src/main/java/com/flexfolio/backend/model/` — Entities:
-  - `UserEntity` (table `User_`) — id, email (unique), password (BCrypt), createdAt, portfolios
-  - `PortfolioEntity` (`Portfolio`) — idPortfolio, user (ManyToOne), experiences (OneToMany), educations (OneToMany)
-  - `ExperienceEntity` (`Experience`) — idExp, position, employer, city, country, startDate, endDate, ongoing, responsibilities, portfolio (ManyToOne)
-  - `EducationEntity` (`Education`) — idEdu, titleOfQualification, training, ongoing, city, country, startDate, endDate, portfolio
-- `repository/` — Spring Data JPA repositories for each entity
-- `service/` — Services encapsulating business logic
-- `controller/` — REST controllers (AuthenticationController handles register/login)
-- `dto/` and `mapper/` — DTO classes and EntityMapper to convert between DTOs and Entities
-- `security/` — `JwtTokenProvider`, `JwtAuthenticationFilter`, `CustomUserDetailsService`, `SecurityConfig`
-
----
-
-## Important Implementation Notes
-- DTOs are used in controllers to avoid exposing JPA entities directly.
-- The `EntityMapper` converts between Entities and DTOs, formats dates, and prevents circular references.
-- `PortfolioEntity` cascades deletes to experiences and educations (cascade = ALL, orphanRemoval = true).
-- `ExperienceEntity` and `EducationEntity` include `ongoing` logic (if ongoing is true, `endDate` is set to null).
-- Passwords must be saved encoded via BCrypt. Authentication endpoints are centralized in `AuthenticationController`.
-- JWT: ensure the JJWT dependency version matches the code (use 0.11.x or later for `Jwts.parserBuilder()` and related APIs).
-
----
-
-## How to run (backend)
-Prerequisites:
-- Java 17
-- Maven
-- Docker (recommended for PostgreSQL)
-
-1) Start PostgreSQL (via docker-compose in `backend/docker-compose.yml`) or run a local Postgres instance.
-
-2) Build & run backend:
-
+## 📂 **Project Structure**
 ```bash
-cd backend
-mvn clean install
-mvn spring-boot:run
+flexfolio/
+├── backend/          # Spring Boot backend
+└── frontend/         # React frontend
+
+
+🚀 Getting Started
+🔧 Prerequisites
+
+Backend: Java 17+, Maven 3.6+
+Frontend: Node.js 16+, npm
+
+
+🛠 Backend (Spring Boot)
+🏃 Running the Backend
+
+Naviguez vers le dossier backend :
+bash Copiercd backend
+
+Lancez l'application :
+bash Copiermvn spring-boot\:run
+Le backend sera accessible sur http://localhost:8080.
+
+📡 API Endpoints
+MéthodeEndpointDescriptionGET/api/usersListe tous les utilisateursGET/api/users/{id}Récupère un utilisateur par IDPOST/api/usersCrée un nouvel utilisateurPUT/api/users/{id}Met à jour un utilisateurDELETE/api/users/{id}Supprime un utilisateur
+🗄 H2 Database Console
+Accédez à la console H2 via http://localhost:8080/h2-console :
+
+JDBC URL: jdbc:h2:mem:flexfoliodb
+Username: sa
+Password: (laisser vide)
+
+
+🎨 Frontend (React)
+🏃 Running the Frontend
+
+Naviguez vers le dossier frontend :
+bash Copiercd frontend
+
+Installez les dépendances :
+bash Copiernpm install
+
+Lancez le serveur de développement :
+bash Copiernpm start
+Le frontend sera accessible sur http://localhost:3000.
+
+
+✨ Features
+
+Gestion des utilisateurs : CRUD complet
+API RESTful : Architecture propre et scalable
+UI Responsive : Interface moderne avec React Router
+CORS Configuré : Communication fluide entre frontend et backend
+Base de données H2 : Idéale pour le développement
+
+
+🛠 Technology Stack
+CatégorieTechnologiesBackendSpring Boot 3.2.0, Spring Data JPA, H2 Database, Lombok, MavenFrontendReact 18, React Router DOM, Axios, CSS3
+
+🌐 Live Demo
+<div align="center">
+  <a href="https://flexfolio-demo.netlify.app" target="_blank">
+    <img src="https://img.shields.io/badge/Demo-Live-green?style=for-the-badge" alt="Live Demo" />
+  </a>
+</div>
+
+📦 Installation & Setup
+
+Clonez le dépôt :
+bash Copiergit clone https://github.com/yourusername/flexfolio.git
+
+Suivez les instructions pour lancer le backend et le frontend.
+
+
+🎬 Animations & Interactions
+Pour ajouter des animations et des effets visuels, vous pouvez utiliser :
+
+Framer Motion pour des animations fluides dans React.
+Lottie pour des animations vectorielles.
+CSS Keyframes pour des effets simples.
+
+Exemple d'intégration avec Framer Motion :
+jsx Copierimport { motion } from "framer-motion";
+
+function App() {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1 }}
+    >
+      <h1>Bienvenue sur FlexFolio !</h1>
+    </motion.div>
+  );
+}
+
+📊 Roadmap
+
+ Ajouter l'authentification JWT
+ Intégrer un système de notifications
+ Déployer sur AWS/Heroku
+
+
+🤝 Contributing
+Les contributions sont les bienvenues ! Ouvrez une issue ou soumettez une pull request.
+
+📜 License
+Ce projet est sous licence MIT.
+
+<div align="center">
+  <p>⭐ Si ce projet vous plaît, n'hésitez pas à le star ! ⭐</p>
+</div>
 ```
-
-By default the app runs on `http://localhost:8080`.
-
----
-
-## Common Postman flows (short)
-1. Register: POST `/api/auth/register` — body: `{ "email":"...","password":"..." }`.
-2. Login: POST `/api/auth/login` — body: `{ "email":"...","password":"..." }`. Response must include a JWT (token) in the response body (or in an `Authorization` header). Copy token.
-3. Use protected endpoints: include header `Authorization: Bearer <token>`.
-
-Endpoints you will typically use:
-- Auth: `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/validate`
-- Users: CRUD endpoints (protected except register)
-- Portfolios: CRUD endpoints (protected)
-- Experiences: CRUD endpoints (protected)
-- Educations: CRUD endpoints (protected)
-
----

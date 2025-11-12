@@ -211,6 +211,7 @@
 }
 
 .App-header nav {
+  /* Petits liens de navigation */
   display: flex;
   justify-content: center;
   gap: 2rem;
@@ -218,6 +219,7 @@
 }
 
 .App-header nav a {
+  /* Style des liens de navigation */
   color: white;
   text-decoration: none;
   font-weight: 500;
@@ -249,6 +251,7 @@
 
 /* Sections */
 .App-main {
+  /* Le contenu de la page, centré et limité en largeur */
   flex: 1;
   padding: 40px 20px;
   max-width: 1200px;
@@ -257,16 +260,19 @@
 }
 
 .home {
+  /* Partie d'accueil */
   margin-top: 50px;
 }
 
 .home h2 {
+  /* Grand sous-titre */
   font-size: 2.5rem;
   color: #282c34;
   margin-bottom: 20px;
 }
 
 .home p {
+  /* Petit texte d'introduction */
   font-size: 1.2rem;
   color: #666;
 }

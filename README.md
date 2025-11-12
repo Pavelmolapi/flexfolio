@@ -4,137 +4,114 @@
     <strong>A full-stack application with React frontend and Spring Boot backend</strong>
   </p>
 
-  ![GitHub stars](https://img.shields.io/github/stars/yourusername/flexfolio?style=social)
-  ![GitHub forks](https://img.shields.io/github/forks/yourusername/flexfolio?style=social)
-  ![License](https://img.shields.io/badge/license-MIT-green)
-  ![Java](https://img.shields.io/badge/Java-17+-orange)
-  ![React](https://img.shields.io/badge/React-18-blue)
-  ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-green)
+  ![GitHub repo size](https://img.shields.io/github/repo-size/yourusername/FlexFolio)
+  ![GitHub stars](https://img.shields.io/github/stars/yourusername/FlexFolio?style=social)
+  ![GitHub forks](https://img.shields.io/github/forks/yourusername/FlexFolio?style=social)
+  ![GitHub issues](https://img.shields.io/github/issues/yourusername/FlexFolio)
+  ![GitHub license](https://img.shields.io/github/license/yourusername/FlexFolio)
 </div>
 
 ---
 
-## 🎯 **Project Overview**
-FlexFolio est une application full-stack conçue pour gérer des utilisateurs avec une interface moderne et une API RESTful. Elle combine la puissance de **Spring Boot** pour le backend et **React** pour le frontend.
+## 📂 Project Structure
 
-<div align="center">
-  <img src="https://media.giphy.com/media/3o7TKSQ5rNQXuQjJ3C/giphy.gif" width="400" alt="FlexFolio Demo" />
-  <p><em>Démonstration de l'application (à remplacer par une capture réelle)</em></p>
-</div>
-
----
-
-## 📂 **Project Structure**
 ```bash
 flexfolio/
-├── backend/          # Spring Boot backend
-└── frontend/         # React frontend
-
-
-🚀 Getting Started
-🔧 Prerequisites
-
-Backend: Java 17+, Maven 3.6+
-Frontend: Node.js 16+, npm
-
+├── backend/          # 🚀 Spring Boot backend
+└── frontend/         # ✨ React frontend
 
 🛠 Backend (Spring Boot)
-🏃 Running the Backend
+📋 Prerequisites
 
-Naviguez vers le dossier backend :
+Java 17 or higher
+Maven 3.6+
+
+🚀 Running the Backend
+
+Navigate to the backend directory:
 bash Copiercd backend
 
-Lancez l'application :
+Run the application:
 bash Copiermvn spring-boot\:run
-Le backend sera accessible sur http://localhost:8080.
+The backend will start on http://localhost:8080
 
 📡 API Endpoints
-MéthodeEndpointDescriptionGET/api/usersListe tous les utilisateursGET/api/users/{id}Récupère un utilisateur par IDPOST/api/usersCrée un nouvel utilisateurPUT/api/users/{id}Met à jour un utilisateurDELETE/api/users/{id}Supprime un utilisateur
-🗄 H2 Database Console
-Accédez à la console H2 via http://localhost:8080/h2-console :
+MethodEndpointDescriptionGET/api/usersGet all usersGET/api/users/{id}Get user by IDPOST/api/usersCreate a new userPUT/api/users/{id}Update a userDELETE/api/users/{id}Delete a user
+🗄 H2 Console
+Access the H2 database console at http://localhost:8080/h2-console
 
 JDBC URL: jdbc:h2:mem:flexfoliodb
 Username: sa
-Password: (laisser vide)
+Password: (leave blank)
 
 
 🎨 Frontend (React)
-🏃 Running the Frontend
+📋 Prerequisites
 
-Naviguez vers le dossier frontend :
+Node.js 16+ and npm
+
+🚀 Running the Frontend
+
+Navigate to the frontend directory:
 bash Copiercd frontend
 
-Installez les dépendances :
+Install dependencies:
 bash Copiernpm install
 
-Lancez le serveur de développement :
+Start the development server:
 bash Copiernpm start
-Le frontend sera accessible sur http://localhost:3000.
+The frontend will start on http://localhost:3000
 
 
 ✨ Features
 
-Gestion des utilisateurs : CRUD complet
-API RESTful : Architecture propre et scalable
-UI Responsive : Interface moderne avec React Router
-CORS Configuré : Communication fluide entre frontend et backend
-Base de données H2 : Idéale pour le développement
+User Management: Create, read, update, and delete users
+RESTful API: Clean REST API architecture
+Responsive UI: Modern React interface with routing
+CORS Enabled: Frontend and backend communication configured
+H2 Database: In-memory database for development
 
 
 🛠 Technology Stack
-CatégorieTechnologiesBackendSpring Boot 3.2.0, Spring Data JPA, H2 Database, Lombok, MavenFrontendReact 18, React Router DOM, Axios, CSS3
+Backend
 
-🌐 Live Demo
-<div align="center">
-  <a href="https://flexfolio-demo.netlify.app" target="_blank">
-    <img src="https://img.shields.io/badge/Demo-Live-green?style=for-the-badge" alt="Live Demo" />
-  </a>
-</div>
+Spring Boot 3.2.0
+Spring Data JPA
+H2 Database
+Lombok
+Maven
 
-📦 Installation & Setup
+Frontend
 
-Clonez le dépôt :
-bash Copiergit clone https://github.com/yourusername/flexfolio.git
+React 18
+React Router DOM
+Axios
+CSS3
 
-Suivez les instructions pour lancer le backend et le frontend.
+
+🚀 Getting Started
+
+Start the backend server (port 8080)
+Start the frontend development server (port 3000)
+Open http://localhost:3000 in your browser
+Navigate through the application to manage users
 
 
-🎬 Animations & Interactions
-Pour ajouter des animations et des effets visuels, vous pouvez utiliser :
+🔧 Development
 
-Framer Motion pour des animations fluides dans React.
-Lottie pour des animations vectorielles.
-CSS Keyframes pour des effets simples.
-
-Exemple d'intégration avec Framer Motion :
-jsx Copierimport { motion } from "framer-motion";
-
-function App() {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 1 }}
-    >
-      <h1>Bienvenue sur FlexFolio !</h1>
-    </motion.div>
-  );
-}
-
-📊 Roadmap
-
- Ajouter l'authentification JWT
- Intégrer un système de notifications
- Déployer sur AWS/Heroku
+Backend API runs on port 8080
+Frontend dev server runs on port 3000
+CORS is configured to allow requests from localhost:3000
 
 
 🤝 Contributing
-Les contributions sont les bienvenues ! Ouvrez une issue ou soumettez une pull request.
+Contributions are welcome! Please fork this repository and submit a pull request.
 
 📜 License
-Ce projet est sous licence MIT.
+This project is licensed under the MIT License.
 
 <div align="center">
-  <p>⭐ Si ce projet vous plaît, n'hésitez pas à le star ! ⭐</p>
+  <img src="https://media.giphy.com/media/l0HlNaQ6gWfllcjDO/giphy.gif" width="200" />
+  <p>Made with ❤️ by <a href="https://github.com/yourusername">@yourusername</a></p>
 </div>
 ```

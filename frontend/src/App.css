@@ -164,6 +164,19 @@
   transition: var(--transition);
 }
 
+/* Contenu principal plein écran (pour login/signup) */
+.main-content-full {
+  flex: 1;
+  margin-left: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
 .content {
   max-width: 1200px;
   margin: 0 auto;
@@ -187,6 +200,12 @@
     margin-left: 0;
     width: 100%;
     padding: 80px 20px 20px;
+  }
+
+  .main-content-full {
+    margin-left: 0;
+    width: 100%;
+    padding: 20px;
   }
 
   .app.menu-open .main-content {

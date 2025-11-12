@@ -1,24 +1,44 @@
 import axios from 'axios';
-// Importe la bibliothèque axios pour effectuer des requêtes HTTP
-// axios est un outil qui nous aide à parler avec le serveur (par internet)
-// Ici on règle comment on parle au serveur
-// Entités et rôles (en mots simples):
-// - axios: l'outil pour envoyer des demandes au serveur.
-// - api: la version d'axios déjà réglée avec l'adresse du serveur.
-// - realUserService: les fonctions qui parlent au vrai serveur.
-// - mockUserService: les mêmes fonctions mais en mode simulé (dans le navigateur).
-// - LS_KEY: le nom sous lequel on sauvegarde la liste d'utilisateurs en mode simulé.
-// - readUsers / writeUsers: lire/écrire la liste d'utilisateurs en mode simulé.
-// - delay: petite attente pour imiter internet.
-const USE_MOCK = process.env.REACT_APP_USE_MOCK === 'true'; // Lit la variable d'environnement pour savoir si on utilise le mode mock (localStorage)
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api'; // Base URL de l'API backend, par défaut localhost
 
-const api = axios.create({ // On prépare axios avec l'adresse du serveur
-  baseURL: API_BASE_URL, // L'adresse du serveur à contacter
+const USE_MOCK = process.env.REACT_APP_USE_MOCK === 'true';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
+
+const api = axios.create({
+  baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json', // On envoie/ reçoit des infos en JSON (format texte)
+    'Content-Type': 'application/json',
   },
 });
+
+// Axios Request Interceptor - Ajoute le token JWT à chaque requête
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Axios Response Interceptor - Gère les erreurs d'authentification
+api.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      // Token expiré ou invalide - déconnecter l'utilisateur
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
 
 // On définit des fonctions qui parlent au vrai serveur
 const realUserService = {
@@ -104,10 +124,12 @@ const mockUserService = { // Les mêmes fonctions mais en mode simulé
 };
 
 
-// Auth service for login and forgot password
+// Auth service for login, signup and forgot password
 const realAuthService = {
   login: ({ email, password }) => api.post('/auth/login', { email, password }),
+  signup: ({ email, password }) => api.post('/auth/register', { email, password }),
   forgotPassword: ({ email }) => api.post('/auth/forgot-password', { email }),
+  validateToken: () => api.post('/auth/validate'),
 };
 
 const mockAuthService = {
@@ -120,6 +142,26 @@ const mockAuthService = {
       throw err;
     }
     return { data: { token: 'mock-token', user: { email } } };
+  },
+  async signup({ email, password }) {
+    await delay();
+    if (!email || !password) {
+      const err = new Error('Missing credentials');
+      err.response = { status: 400, data: { message: 'Missing credentials' } };
+      throw err;
+    }
+    // Check if user already exists (mock)
+    const users = readUsers();
+    if (users.some(u => u.email === email)) {
+      const err = new Error('Email already exists');
+      err.response = { status: 400, data: { message: 'Cet email est déjà utilisé' } };
+      throw err;
+    }
+    // Create new user (mock)
+    const newUser = { id: users.length + 1, email };
+    users.push(newUser);
+    writeUsers(users);
+    return { data: { message: 'Compte créé avec succès', user: newUser } };
   },
   async forgotPassword({ email }) {
     await delay();

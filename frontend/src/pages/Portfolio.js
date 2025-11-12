@@ -19,6 +19,7 @@ import WorkIcon from '@mui/icons-material/Work';
 import SchoolIcon from '@mui/icons-material/School';
 import CodeIcon from '@mui/icons-material/Code';
 import LanguageIcon from '@mui/icons-material/Language';
+import BuildIcon from '@mui/icons-material/Build';
 
 const Portfolio = () => {
   const { portfolios } = useProfile();
@@ -41,7 +42,7 @@ const Portfolio = () => {
       case 'langue':
         return <LanguageIcon />;
       case 'projet':
-        return <CodeIcon />;
+        return <BuildIcon />;
       default:
         return null;
     }
@@ -105,7 +106,7 @@ const Portfolio = () => {
           <Tab label="Formations" value="education" icon={<SchoolIcon />} iconPosition="start" />
           <Tab label="Compétences" value="competence" icon={<CodeIcon />} iconPosition="start" />
           <Tab label="Langues" value="langue" icon={<LanguageIcon />} iconPosition="start" />
-          <Tab label="Projets" value="projet" icon={<CodeIcon />} iconPosition="start" />
+          <Tab label="Projets" value="projet" icon={<BuildIcon />} iconPosition="start" />
         </Tabs>
       </Paper>
 

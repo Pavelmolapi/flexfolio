@@ -1,0 +1,568 @@
+/* ============================================
+   CONTACT PAGE STYLES - ADAPTÉ POUR MUI & GLASSMORPHISM
+   ============================================ */
+
+/* Variables CSS du HTML (palette moderne) */
+:root {
+    /* Palette de couleurs modernes */
+    --primary: #1976d2;
+    --primary-light: #42a5f5;
+    --primary-dark: #1565c0;
+    --accent: #2196f3;
+    --text-dark: #1a1a1a;
+    --text-light: #666;
+    --border-light: rgba(255, 255, 255, 0.25);
+    --bg-light: rgba(255, 255, 255, 0.15);
+    --bg-medium: rgba(255, 255, 255, 0.2);
+    --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.15);
+}
+
+/* Reset basique (du HTML) */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+}
+
+/* === Container Principal (avec blobs animés du HTML) === */
+.contact-container {
+    padding: 60px 20px; /* Du HTML */
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* Du HTML */
+    position: relative;
+    overflow: hidden;
+}
+
+/* Décoration de fond avec blobs animés (du HTML) */
+.contact-container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(66, 165, 245, 0.15) 0%, transparent 70%);
+    border-radius: 45% 55% 60% 40% / 55% 45% 40% 60%;
+    animation: blobAnimation 8s ease-in-out infinite;
+    z-index: 1;
+}
+
+.contact-container::after {
+    content: '';
+    position: absolute;
+    bottom: -50%;
+    left: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(25, 118, 210, 0.1) 0%, transparent 70%);
+    border-radius: 45% 55% 50% 50% / 50% 50% 55% 45%;
+    animation: blobAnimation 10s ease-in-out infinite reverse;
+    z-index: 1;
+}
+
+@keyframes blobAnimation {
+    0%, 100% {
+        border-radius: 45% 55% 60% 40% / 55% 45% 40% 60%;
+        transform: translate(0, 0);
+    }
+    25% {
+        border-radius: 40% 60% 50% 50% / 50% 50% 60% 40%;
+        transform: translate(30px, -50px);
+    }
+    50% {
+        border-radius: 50% 50% 45% 55% / 55% 45% 50% 50%;
+        transform: translate(0, -30px);
+    }
+    75% {
+        border-radius: 55% 45% 55% 45% / 45% 55% 45% 55%;
+        transform: translate(-30px, -50px);
+    }
+}
+
+/* === Titre Principal (du HTML) === */
+.contact-title {
+    text-align: center;
+    margin-bottom: 60px;
+    font-weight: 800;
+    font-size: clamp(1.75rem, 5vw, 2.5rem);
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+    z-index: 2;
+    opacity: 0;
+    animation: fadeInDown 0.8s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* === Grille Principale (adapté pour MUI Grid) === */
+.contact-grid {
+    display: grid !important; /* Override MUI si besoin */
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
+    gap: 32px !important;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+}
+
+/* === Cartes (Contact Info & Formulaire) - Glassmorphism (du HTML, override MUI Card) === */
+.contact-card {
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    border-radius: 20px !important;
+    overflow: hidden !important;
+    background: var(--bg-medium) !important;
+    backdrop-filter: blur(12px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
+    border: 1px solid var(--border-light) !important;
+    box-shadow: var(--shadow-md) !important;
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1) !important;
+    animation: fadeInUp 0.6s ease-out forwards !important;
+    position: relative !important;
+    z-index: 3 !important; /* Au-dessus des blobs */
+}
+
+.contact-card:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.contact-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.contact-card:hover {
+    transform: translateY(-12px) scale(1.02) !important;
+    box-shadow: var(--shadow-lg) !important;
+    background: var(--bg-light) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* === En-tête des Cartes (override MUI Box) === */
+.contact-card-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%) !important;
+    color: white !important;
+    padding: 32px 24px !important;
+    text-align: center !important;
+    font-weight: 700 !important;
+    font-size: clamp(1.1rem, 3vw, 1.35rem) !important;
+    letter-spacing: 0.5px !important;
+    position: relative !important;
+    overflow: hidden !important;
+    z-index: 3 !important;
+}
+
+.contact-card-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+    animation: shimmer 6s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0%, 100% {
+        transform: translate(0, 0);
+    }
+    50% {
+        transform: translate(50px, 50px);
+    }
+}
+
+/* === Contenu des Cartes (override MUI CardContent) === */
+.contact-card-content {
+    padding: 32px !important;
+    flex-grow: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* === Élément de Contact (du HTML, pour MUI Box) === */
+.contact-item {
+    margin-bottom: 28px !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    opacity: 0;
+    animation: slideInLeft 0.6s ease-out forwards !important;
+}
+
+.contact-item:nth-child(1) {
+    animation-delay: 0.3s;
+}
+
+.contact-item-delay-2 { /* AJOUT: Pour delays custom dans JSX */
+    animation-delay: 0.4s !important;
+}
+
+.contact-item-delay-3 {
+    animation-delay: 0.5s !important;
+}
+
+.contact-item:last-child {
+    margin-bottom: 0 !important;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.contact-item-avatar {
+    background: linear-gradient(135deg, rgba(66, 165, 245, 0.3) 0%, rgba(25, 118, 210, 0.3) 100%) !important;
+    color: var(--primary) !important;
+    border-radius: 50% !important;
+    width: 54px !important;
+    height: 54px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-right: 20px !important;
+    flex-shrink: 0 !important;
+    border: 2px solid rgba(66, 165, 245, 0.4) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    transition: all 0.3s ease !important;
+    font-size: 24px !important; /* Pour icônes MUI */
+}
+
+.contact-item:hover .contact-item-avatar {
+    transform: scale(1.1) rotate(5deg) !important;
+    border-color: rgba(66, 165, 245, 0.6) !important;
+    box-shadow: 0 4px 16px rgba(25, 118, 210, 0.2) !important;
+}
+
+.contact-item-icon { /* AJOUT: Style pour icônes MUI dans avatar */
+    font-size: 24px !important;
+    color: var(--primary) !important;
+}
+
+.contact-item-content {
+    flex: 1 !important;
+}
+
+.contact-item-label {
+    font-size: 0.8rem !important;
+    color: var(--text-light) !important;
+    font-weight: 600 !important;
+    margin-bottom: 6px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    opacity: 0.8 !important;
+}
+
+.contact-item-value {
+    font-size: 1rem !important;
+    color: var(--text-dark) !important;
+    line-height: 1.6 !important;
+    font-weight: 500 !important;
+    word-break: break-word !important;
+}
+
+/* === Message de Bienvenue (du HTML) === */
+.contact-welcome-message {
+    margin-top: auto !important;
+    padding-top: 24px !important;
+    border-top: 1px solid rgba(0, 0, 0, 0.1) !important;
+    font-size: 0.9rem !important;
+    color: var(--text-light) !important;
+    text-align: center !important;
+    line-height: 1.7 !important;
+    opacity: 0.9 !important;
+    transition: all 0.3s ease !important;
+}
+
+.contact-card:hover .contact-welcome-message {
+    opacity: 1 !important;
+    color: var(--text-dark) !important;
+}
+
+/* === Formulaire (du HTML, pour MUI form) === */
+.contact-form {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px !important;
+}
+
+.contact-form-field-full {
+    grid-column: 1 / -1 !important;
+}
+
+.contact-form-textarea {
+    grid-column: 1 / -1 !important;
+}
+
+/* === Champs de Texte (overrides MUI TextField agressifs) === */
+.contact-input-field {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.contact-input-field .MuiInputLabel-root {
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 8px !important;
+    color: var(--text-light) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+.contact-input-field .MuiOutlinedInput-root {
+    border-radius: 12px !important;
+    border: 2px solid rgba(0, 0, 0, 0.08) !important;
+    background: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1) !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+.contact-input-field .MuiOutlinedInput-input,
+.contact-input-field .MuiOutlinedInput-multiline {
+    padding: 14px 18px !important;
+    font-size: 1rem !important;
+    color: var(--text-dark) !important;
+    resize: vertical !important;
+}
+
+.contact-input-field .MuiOutlinedInput-input::placeholder,
+.contact-input-field .MuiOutlinedInput-multiline::placeholder {
+    color: rgba(0, 0, 0, 0.4) !important;
+}
+
+.contact-input-field .MuiOutlinedInput-root:hover {
+    background: rgba(255, 255, 255, 0.7) !important;
+    border-color: rgba(25, 118, 210, 0.3) !important;
+}
+
+.contact-input-field .MuiOutlinedInput-root.Mui-focused {
+    outline: none !important;
+    border-color: var(--primary) !important;
+    background: rgba(255, 255, 255, 0.85) !important;
+    box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.1), var(--shadow-sm) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Style pour adornments (icônes dans inputs) */
+.contact-input-field .MuiInputAdornment-root svg {
+    color: var(--primary-dark) !important;
+    font-size: 20px !important;
+}
+
+/* === Bouton d'Envoi (override MUI Button) === */
+.contact-submit-btn {
+    grid-column: 1 / -1 !important;
+    padding: 16px 32px !important;
+    border-radius: 12px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    font-size: 0.95rem !important;
+    border: none !important;
+    cursor: pointer !important;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%) !important;
+    color: white !important;
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    margin-top: 12px !important;
+    box-shadow: 0 6px 20px rgba(25, 118, 210, 0.25) !important;
+    text-transform: none !important; /* Override MUI uppercase si besoin */
+}
+
+.contact-submit-btn::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: rgba(255, 255, 255, 0.3) !important;
+    border-radius: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    transition: width 0.6s, height 0.6s !important;
+}
+
+.contact-submit-btn:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 12px 32px rgba(25, 118, 210, 0.35) !important;
+}
+
+.contact-submit-btn:hover::before {
+    width: 300px !important;
+    height: 300px !important;
+}
+
+.contact-submit-btn:active {
+    transform: translateY(-2px) !important;
+}
+
+/* ============================================
+   RESPONSIVE (du HTML + votre version)
+   ============================================ */
+@media (max-width: 960px) {
+    .contact-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .contact-title {
+        font-size: 1.75rem !important;
+        margin-bottom: 40px !important;
+    }
+
+    .contact-card-content {
+        padding: 24px !important;
+    }
+
+    .contact-form {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .contact-container {
+        padding: 40px 16px !important;
+    }
+
+    .contact-container::before,
+    .contact-container::after {
+        width: 250px !important;
+        height: 250px !important;
+    }
+
+    .contact-title {
+        font-size: 1.5rem !important;
+        margin-bottom: 32px !important;
+    }
+
+    .contact-grid {
+        gap: 20px !important;
+    }
+
+    .contact-card {
+        border-radius: 16px !important;
+    }
+
+    .contact-card-header {
+        padding: 24px 16px !important;
+        font-size: 1.1rem !important;
+    }
+
+    .contact-card-content {
+        padding: 20px !important;
+    }
+
+    .contact-form {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    .contact-item {
+        margin-bottom: 20px !important;
+    }
+
+    .contact-item-avatar {
+        width: 48px !important;
+        height: 48px !important;
+        margin-right: 16px !important;
+    }
+
+    .contact-submit-btn {
+        padding: 14px 24px !important;
+        font-size: 0.9rem !important;
+        margin-top: 8px !important;
+    }
+
+    .contact-input-field .MuiOutlinedInput-input,
+    .contact-input-field .MuiOutlinedInput-multiline {
+        padding: 12px 14px !important;
+        font-size: 16px !important; /* Pour mobile */
+    }
+}
+
+@media (max-width: 400px) {
+    .contact-container {
+        padding: 32px 12px !important;
+    }
+
+    .contact-title {
+        font-size: 1.35rem !important;
+        margin-bottom: 24px !important;
+    }
+
+    .contact-card-header {
+        padding: 20px 12px !important;
+        font-size: 1rem !important;
+    }
+
+    .contact-card-content {
+        padding: 16px !important;
+    }
+
+    .contact-item-avatar {
+        width: 44px !important;
+        height: 44px !important;
+    }
+
+    .contact-item-label {
+        font-size: 0.75rem !important;
+    }
+}
+
+/* États spéciaux (de votre CSS original) */
+.contact-input-field.error .MuiOutlinedInput-root {
+    border-color: #d32f2f !important;
+}
+
+.contact-input-field .MuiOutlinedInput-root.Mui-disabled {
+    background-color: #f5f5f5 !important;
+    cursor: not-allowed !important;
+}
+
+/* Focus pour accessibilité */
+.contact-input-field .MuiOutlinedInput-root:focus-within {
+    outline: 2px solid var(--primary) !important;
+    outline-offset: 2px !important;
+}

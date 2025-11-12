@@ -27,6 +27,7 @@ import AddIcon from '@mui/icons-material/Add';
 import WorkIcon from '@mui/icons-material/Work';
 import SchoolIcon from '@mui/icons-material/School';
 import CodeIcon from '@mui/icons-material/Code';
+import BuildIcon from '@mui/icons-material/Build';
 import LanguageIcon from '@mui/icons-material/Language';
 
 const TabPanel = (props) => {
@@ -161,7 +162,7 @@ export const PortfolioForm = ({ open, onClose, portfolio, onSubmit }) => {
             <Tab icon={<SchoolIcon />} label="Formation" />
             <Tab icon={<CodeIcon />} label="Compétence" />
             <Tab icon={<LanguageIcon />} label="Langue" />
-            <Tab icon={<CodeIcon />} label="Projet" />
+            <Tab icon={<BuildIcon />} label="Projet" />
           </Tabs>
         </Box>
 

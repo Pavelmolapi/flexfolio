@@ -34,6 +34,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import SchoolIcon from '@mui/icons-material/School';
 import CodeIcon from '@mui/icons-material/Code';
 import LanguageIcon from '@mui/icons-material/Language';
+import BuildIcon from '@mui/icons-material/Build';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import SaveIcon from '@mui/icons-material/Save';
 import GitHubIcon from '@mui/icons-material/GitHub';
@@ -93,7 +94,7 @@ const AdminDashboard = () => {
     { id: 'education', label: 'Formations', icon: <SchoolIcon /> },
     { id: 'competence', label: 'Compétences', icon: <CodeIcon /> },
     { id: 'langue', label: 'Langues', icon: <LanguageIcon /> },
-    { id: 'projet', label: 'Projets', icon: <CodeIcon /> }
+    { id: 'projet', label: 'Projets', icon: <BuildIcon /> }
   ];
   
   const navigate = useNavigate();

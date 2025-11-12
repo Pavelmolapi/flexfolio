@@ -1,0 +1,6 @@
+    <Typography variant="h4" component="h1" className="contact-title">
+        Contactez-nous
+      </Typography>
+      
+      <Grid container spacing={4} justifyContent="center" className="contact-grid">
+        {/* Carte d'informations de contact */}

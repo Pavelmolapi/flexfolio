@@ -1,0 +1,6 @@
+--- a/Contact.js
++++ b/Contact.js
+@@
+-      <Grid container spacing={4} justifyContent="center">
++      <Grid container spacing={4} justifyContent="center" className="contact-grid">
+         {/* Carte d'informations de contact */}

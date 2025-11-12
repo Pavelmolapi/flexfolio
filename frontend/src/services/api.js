@@ -135,13 +135,22 @@ const realAuthService = {
 const mockAuthService = {
   async login({ email, password }) {
     await delay();
-    // Accept any email/password for mock, return fake token
+    // Accept any email/password for mock, return fake token matching backend format
     if (!email || !password) {
       const err = new Error('Missing credentials');
       err.response = { status: 400, data: { message: 'Missing credentials' } };
       throw err;
     }
-    return { data: { token: 'mock-token', user: { email } } };
+    // Match backend JwtResponseDto format
+    return { 
+      data: { 
+        accessToken: 'mock-jwt-token-' + Date.now(),
+        tokenType: 'Bearer',
+        userId: 1,
+        email: email,
+        expiresIn: 86400000 // 24 hours in milliseconds
+      } 
+    };
   },
   async signup({ email, password }) {
     await delay();
@@ -157,11 +166,15 @@ const mockAuthService = {
       err.response = { status: 400, data: { message: 'Cet email est déjà utilisé' } };
       throw err;
     }
-    // Create new user (mock)
-    const newUser = { id: users.length + 1, email };
+    // Create new user (mock) - Match backend UserDto format
+    const newUser = { 
+      id: users.length + 1, 
+      email: email,
+      createdAt: new Date().toISOString()
+    };
     users.push(newUser);
     writeUsers(users);
-    return { data: { message: 'Compte créé avec succès', user: newUser } };
+    return { data: newUser };
   },
   async forgotPassword({ email }) {
     await delay();
@@ -172,9 +185,180 @@ const mockAuthService = {
     }
     return { data: { message: 'Reset link sent (mock)' } };
   },
+  async validateToken() {
+    await delay();
+    // Mock token validation - always return true for mock
+    return { data: true };
+  },
 };
 
 export const userService = USE_MOCK ? mockUserService : realUserService;
 export const authService = USE_MOCK ? mockAuthService : realAuthService;
+
+// Portfolio service
+const realPortfolioService = {
+  // Portfolio endpoints
+  getAllPortfolios: () => api.get('/portfolios'),
+  getPortfolioById: (id) => api.get(`/portfolios/${id}`),
+  getUserPortfolios: (userId) => api.get(`/portfolios/user/${userId}`),
+  createPortfolio: (userId, portfolioData) => api.post(`/portfolios/${userId}`, portfolioData),
+  updatePortfolio: (id, portfolio) => api.put(`/portfolios/${id}`, portfolio),
+  deletePortfolio: (id) => api.delete(`/portfolios/${id}`),
+  
+  // Experience endpoints
+  getAllExperiences: () => api.get('/experiences'),
+  getExperienceById: (id) => api.get(`/experiences/${id}`),
+  createExperience: (portfolioId, experience) => api.post(`/experiences/${portfolioId}`, experience),
+  updateExperience: (id, experience) => api.put(`/experiences/${id}`, experience),
+  deleteExperience: (id) => api.delete(`/experiences/${id}`),
+  
+  // Education endpoints
+  getAllEducations: () => api.get('/educations'),
+  getEducationById: (id) => api.get(`/educations/${id}`),
+  createEducation: (portfolioId, education) => api.post(`/educations/${portfolioId}`, education),
+  updateEducation: (id, education) => api.put(`/educations/${id}`, education),
+  deleteEducation: (id) => api.delete(`/educations/${id}`),
+};
+
+const mockPortfolioService = {
+  // Portfolio endpoints (mock)
+  async getAllPortfolios() {
+    await delay();
+    const portfolios = JSON.parse(localStorage.getItem('portfolios') || '[]');
+    return { data: portfolios };
+  },
+  async getPortfolioById(id) {
+    await delay();
+    const portfolios = JSON.parse(localStorage.getItem('portfolios') || '[]');
+    const portfolio = portfolios.find(p => p.id === id);
+    return { data: portfolio || null };
+  },
+  async getUserPortfolios(userId) {
+    await delay();
+    const portfolios = JSON.parse(localStorage.getItem('portfolios') || '[]');
+    // In mock mode, return all portfolios for any user
+    return { data: portfolios };
+  },
+  async createPortfolio(userId, portfolioData) {
+    await delay();
+    const portfolios = JSON.parse(localStorage.getItem('portfolios') || '[]');
+    const newPortfolio = {
+      id: Date.now(),
+      userId: userId,
+      ...portfolioData,
+      experiences: [],
+      educations: []
+    };
+    portfolios.push(newPortfolio);
+    localStorage.setItem('portfolios', JSON.stringify(portfolios));
+    return { data: newPortfolio };
+  },
+  async updatePortfolio(id, portfolio) {
+    await delay();
+    const portfolios = JSON.parse(localStorage.getItem('portfolios') || '[]');
+    const index = portfolios.findIndex(p => p.id === id);
+    if (index !== -1) {
+      portfolios[index] = { ...portfolios[index], ...portfolio };
+      localStorage.setItem('portfolios', JSON.stringify(portfolios));
+      return { data: portfolios[index] };
+    }
+    throw new Error('Portfolio not found');
+  },
+  async deletePortfolio(id) {
+    await delay();
+    const portfolios = JSON.parse(localStorage.getItem('portfolios') || '[]');
+    const filtered = portfolios.filter(p => p.id !== id);
+    localStorage.setItem('portfolios', JSON.stringify(filtered));
+    return { data: {} };
+  },
+  
+  // Experience endpoints (mock)
+  async getAllExperiences() {
+    await delay();
+    const experiences = JSON.parse(localStorage.getItem('experiences') || '[]');
+    return { data: experiences };
+  },
+  async getExperienceById(id) {
+    await delay();
+    const experiences = JSON.parse(localStorage.getItem('experiences') || '[]');
+    const experience = experiences.find(e => e.id === id);
+    return { data: experience || null };
+  },
+  async createExperience(portfolioId, experience) {
+    await delay();
+    const experiences = JSON.parse(localStorage.getItem('experiences') || '[]');
+    const newExperience = {
+      id: Date.now(),
+      ...experience,
+      portfolioId: portfolioId
+    };
+    experiences.push(newExperience);
+    localStorage.setItem('experiences', JSON.stringify(experiences));
+    return { data: newExperience };
+  },
+  async updateExperience(id, experience) {
+    await delay();
+    const experiences = JSON.parse(localStorage.getItem('experiences') || '[]');
+    const index = experiences.findIndex(e => e.id === id);
+    if (index !== -1) {
+      experiences[index] = { ...experiences[index], ...experience };
+      localStorage.setItem('experiences', JSON.stringify(experiences));
+      return { data: experiences[index] };
+    }
+    throw new Error('Experience not found');
+  },
+  async deleteExperience(id) {
+    await delay();
+    const experiences = JSON.parse(localStorage.getItem('experiences') || '[]');
+    const filtered = experiences.filter(e => e.id !== id);
+    localStorage.setItem('experiences', JSON.stringify(filtered));
+    return { data: {} };
+  },
+  
+  // Education endpoints (mock)
+  async getAllEducations() {
+    await delay();
+    const educations = JSON.parse(localStorage.getItem('educations') || '[]');
+    return { data: educations };
+  },
+  async getEducationById(id) {
+    await delay();
+    const educations = JSON.parse(localStorage.getItem('educations') || '[]');
+    const education = educations.find(e => e.id === id);
+    return { data: education || null };
+  },
+  async createEducation(portfolioId, education) {
+    await delay();
+    const educations = JSON.parse(localStorage.getItem('educations') || '[]');
+    const newEducation = {
+      id: Date.now(),
+      ...education,
+      portfolioId: portfolioId
+    };
+    educations.push(newEducation);
+    localStorage.setItem('educations', JSON.stringify(educations));
+    return { data: newEducation };
+  },
+  async updateEducation(id, education) {
+    await delay();
+    const educations = JSON.parse(localStorage.getItem('educations') || '[]');
+    const index = educations.findIndex(e => e.id === id);
+    if (index !== -1) {
+      educations[index] = { ...educations[index], ...education };
+      localStorage.setItem('educations', JSON.stringify(educations));
+      return { data: educations[index] };
+    }
+    throw new Error('Education not found');
+  },
+  async deleteEducation(id) {
+    await delay();
+    const educations = JSON.parse(localStorage.getItem('educations') || '[]');
+    const filtered = educations.filter(e => e.id !== id);
+    localStorage.setItem('educations', JSON.stringify(filtered));
+    return { data: {} };
+  },
+};
+
+export const portfolioService = USE_MOCK ? mockPortfolioService : realPortfolioService;
 export default api;
 

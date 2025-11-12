@@ -5,29 +5,21 @@ import {
   Box,
   Button,
   Container,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Typography,
-  IconButton,
+  TextField,
+  Tabs,
+  Tab,
+  Grid,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
-  Tabs,
-  Tab,
   Card,
   CardContent,
   CardActions,
-  Grid,
+  Chip,
+  IconButton,
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import WorkIcon from '@mui/icons-material/Work';
 import PersonIcon from '@mui/icons-material/Person';
@@ -40,7 +32,20 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import InputAdornment from '@mui/material/InputAdornment';
-import { PortfolioForm, PortfolioList } from './PortfolioForm';
+import FolderIcon from '@mui/icons-material/Folder';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { 
+  ExperienceForm, 
+  EducationForm, 
+  SkillForm, 
+  LanguageForm,
+  ExperienceList,
+  EducationList,
+  SkillList,
+  LanguageList
+} from './PortfolioForm';
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -71,30 +76,62 @@ const a11yProps = (index) => {
 
 const AdminDashboard = () => {
   const [tabValue, setTabValue] = useState(0);
-  const { profile, updateProfile } = useProfile();
+  const { 
+    profile, 
+    updateProfile,
+    portfolios,
+    activePortfolio,
+    activePortfolioId,
+    experiences,
+    educations,
+    skills,
+    languages,
+    addExperience,
+    updateExperience,
+    deleteExperience,
+    addEducation,
+    updateEducation,
+    deleteEducation,
+    addSkill,
+    updateSkill,
+    deleteSkill,
+    addLanguage,
+    updateLanguage,
+    deleteLanguage,
+    createPortfolio,
+    updatePortfolio,
+    deletePortfolio,
+    switchPortfolio
+  } = useProfile();
+  
   const [profileData, setProfileData] = useState({ ...profile });
   const [activeTab, setActiveTab] = useState('profile');
+  
+  // Dialog states for each entity type
+  const [experienceDialogOpen, setExperienceDialogOpen] = useState(false);
+  const [educationDialogOpen, setEducationDialogOpen] = useState(false);
+  const [skillDialogOpen, setSkillDialogOpen] = useState(false);
+  const [languageDialogOpen, setLanguageDialogOpen] = useState(false);
+  
+  // Current item being edited
+  const [currentExperience, setCurrentExperience] = useState(null);
+  const [currentEducation, setCurrentEducation] = useState(null);
+  const [currentSkill, setCurrentSkill] = useState(null);
+  const [currentLanguage, setCurrentLanguage] = useState(null);
+  
+  // Active portfolio sub-tab
+  const [portfolioTab, setPortfolioTab] = useState('experiences');
+  
+  // Portfolio management dialog
+  const [portfolioDialogOpen, setPortfolioDialogOpen] = useState(false);
+  const [portfolioDialogMode, setPortfolioDialogMode] = useState('create'); // 'create' or 'rename'
+  const [portfolioDialogValue, setPortfolioDialogValue] = useState('');
+  const [selectedPortfolioId, setSelectedPortfolioId] = useState(null);
   
   // Synchroniser profileData avec les mises à jour du contexte
   useEffect(() => {
     setProfileData(profile);
   }, [profile]);
-  
-  // Gestion du portfolio avec le contexte
-  const { portfolios, addPortfolioItem, updatePortfolioItem, deletePortfolioItem } = useProfile();
-  const [portfolioDialogOpen, setPortfolioDialogOpen] = useState(false);
-  const [currentPortfolio, setCurrentPortfolio] = useState(null);
-  const [activeCategory, setActiveCategory] = useState('all');
-  
-  // Catégories disponibles pour le portfolio
-  const categories = [
-    { id: 'all', label: 'Tous', icon: <WorkIcon /> },
-    { id: 'experience', label: 'Expériences', icon: <WorkIcon /> },
-    { id: 'education', label: 'Formations', icon: <SchoolIcon /> },
-    { id: 'competence', label: 'Compétences', icon: <CodeIcon /> },
-    { id: 'langue', label: 'Langues', icon: <LanguageIcon /> },
-    { id: 'projet', label: 'Projets', icon: <CodeIcon /> }
-  ];
   
   const navigate = useNavigate();
   
@@ -142,119 +179,186 @@ const AdminDashboard = () => {
     alert('Profil mis à jour avec succès !');
   };
   
-  // Gestion du portfolio
-  const handlePortfolioOpen = (portfolio = null) => {
-    if (portfolio) {
-      setCurrentPortfolio(portfolio);
-    } else {
-      setCurrentPortfolio({
-        title: '',
-        description: '',
-        imageUrl: 'https://via.placeholder.com/300x200',
-        technologies: '',
-        category: activeCategory === 'all' ? 'experience' : activeCategory,
-        projectUrl: '',
-        githubUrl: '',
-        company: '',
-        period: '',
-        location: '',
-        institution: '',
-        level: ''
-      });
+  // Experience handlers
+  const handleExperienceOpen = (experience = null) => {
+    setCurrentExperience(experience);
+    setExperienceDialogOpen(true);
+  };
+
+  const handleExperienceClose = () => {
+    setExperienceDialogOpen(false);
+    setCurrentExperience(null);
+  };
+
+  const handleExperienceSubmit = async (experience) => {
+    try {
+      if (experience.idExp) {
+        await updateExperience(experience.idExp, experience);
+      } else {
+        await addExperience(experience);
+      }
+      // Only close dialog on success
+      handleExperienceClose();
+    } catch (error) {
+      // Error already shown to user, keep dialog open
+      console.error('Failed to submit experience:', error);
     }
+  };
+
+  const handleDeleteExperience = async (idExp) => {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette expérience ?')) {
+      try {
+        await deleteExperience(idExp);
+      } catch (error) {
+        // Error already shown to user
+        console.error('Failed to delete experience:', error);
+      }
+    }
+  };
+
+  // Education handlers
+  const handleEducationOpen = (education = null) => {
+    setCurrentEducation(education);
+    setEducationDialogOpen(true);
+  };
+
+  const handleEducationClose = () => {
+    setEducationDialogOpen(false);
+    setCurrentEducation(null);
+  };
+
+  const handleEducationSubmit = async (education) => {
+    try {
+      if (education.idEdu) {
+        await updateEducation(education.idEdu, education);
+      } else {
+        await addEducation(education);
+      }
+      // Only close dialog on success
+      handleEducationClose();
+    } catch (error) {
+      // Error already shown to user, keep dialog open
+      console.error('Failed to submit education:', error);
+    }
+  };
+
+  const handleDeleteEducation = async (idEdu) => {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette formation ?')) {
+      try {
+        await deleteEducation(idEdu);
+      } catch (error) {
+        // Error already shown to user
+        console.error('Failed to delete education:', error);
+      }
+    }
+  };
+
+  // Skill handlers
+  const handleSkillOpen = (skill = null) => {
+    setCurrentSkill(skill);
+    setSkillDialogOpen(true);
+  };
+
+  const handleSkillClose = () => {
+    setSkillDialogOpen(false);
+    setCurrentSkill(null);
+  };
+
+  const handleSkillSubmit = (skill) => {
+    if (skill.id) {
+      updateSkill(skill.id, skill);
+    } else {
+      addSkill(skill);
+    }
+  };
+
+  const handleDeleteSkill = (id) => {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette compétence ?')) {
+      deleteSkill(id);
+    }
+  };
+
+  // Language handlers
+  const handleLanguageOpen = (language = null) => {
+    setCurrentLanguage(language);
+    setLanguageDialogOpen(true);
+  };
+
+  const handleLanguageClose = () => {
+    setLanguageDialogOpen(false);
+    setCurrentLanguage(null);
+  };
+
+  const handleLanguageSubmit = (language) => {
+    if (language.id) {
+      updateLanguage(language.id, language);
+    } else {
+      addLanguage(language);
+    }
+  };
+
+  const handleDeleteLanguage = (id) => {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette langue ?')) {
+      deleteLanguage(id);
+    }
+  };
+
+  // Portfolio management handlers
+  const handleOpenCreatePortfolio = () => {
+    setPortfolioDialogMode('create');
+    setPortfolioDialogValue('');
     setPortfolioDialogOpen(true);
   };
 
-  const handlePortfolioClose = () => {
+  const handleOpenRenamePortfolio = (portfolio) => {
+    setPortfolioDialogMode('rename');
+    setPortfolioDialogValue(portfolio.name);
+    setSelectedPortfolioId(portfolio.id);
+    setPortfolioDialogOpen(true);
+  };
+
+  const handleClosePortfolioDialog = () => {
     setPortfolioDialogOpen(false);
-    setCurrentPortfolio(null);
+    setPortfolioDialogValue('');
+    setSelectedPortfolioId(null);
   };
 
-  const handlePortfolioSubmit = (portfolio) => {
-    if (portfolio.id) {
-      // Mise à jour d'un portfolio existant
-      updatePortfolioItem(portfolio.id, portfolio);
+  const handleSubmitPortfolioDialog = () => {
+    if (!portfolioDialogValue.trim()) {
+      alert('Le nom du portfolio ne peut pas être vide');
+      return;
+    }
+
+    if (portfolioDialogMode === 'create') {
+      createPortfolio(portfolioDialogValue.trim());
+    } else if (portfolioDialogMode === 'rename') {
+      updatePortfolio(selectedPortfolioId, { name: portfolioDialogValue.trim() });
+    }
+
+    handleClosePortfolioDialog();
+  };
+
+  const handleDeletePortfolio = (portfolioId) => {
+    console.log('🎯 handleDeletePortfolio called with:', portfolioId);
+    console.log('📊 Current portfolios count:', portfolios.length);
+    
+    if (portfolios.length <= 1) {
+      console.log('❌ Blocked: Cannot delete last portfolio');
+      alert('Vous ne pouvez pas supprimer le dernier portfolio');
+      return;
+    }
+
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer ce portfolio ? Toutes les données seront perdues.')) {
+      console.log('✅ User confirmed deletion, calling deletePortfolio...');
+      deletePortfolio(portfolioId);
+      console.log('✅ deletePortfolio returned');
     } else {
-      // Ajout d'un nouveau portfolio
-      addPortfolioItem(portfolio);
-    }
-    setPortfolioDialogOpen(false);
-  };
-
-  const handleDeletePortfolio = (id) => {
-    if (window.confirm('Êtes-vous sûr de vouloir supprimer cet élément ?')) {
-      deletePortfolioItem(id);
+      console.log('❌ User cancelled deletion');
     }
   };
 
-  // Fonctions pour gérer les projets
-  const [projects, setProjects] = useState([
-    {
-      id: 1,
-      title: 'Projet 1',
-      description: 'Description du projet 1',
-      imageUrl: 'https://via.placeholder.com/300x200',
-      technologies: 'React, Node.js, MongoDB',
-      projectUrl: 'https://projet1.com',
-      githubUrl: 'https://github.com/projet1',
-      category: 'web'
-    },
-    {
-      id: 2,
-      title: 'Projet 2',
-      description: 'Description du projet 2',
-      imageUrl: 'https://via.placeholder.com/300x200',
-      technologies: 'React, Node.js, MongoDB',
-      projectUrl: 'https://projet2.com',
-      githubUrl: 'https://github.com/projet2',
-      category: 'mobile'
-    }
-  ]);
-  const [currentProject, setCurrentProject] = useState(null);
-  const [projectCategory, setProjectCategory] = useState('all');
-  const [projectDialogOpen, setProjectDialogOpen] = useState(false);
-
-  const handleProjectOpen = (project = null) => {
-    if (project) {
-      setCurrentProject(project);
-    } else {
-      setCurrentProject({
-        title: '',
-        description: '',
-        imageUrl: 'https://via.placeholder.com/300x200',
-        technologies: '',
-        projectUrl: '',
-        githubUrl: '',
-        category: projectCategory === 'all' ? 'web' : projectCategory
-      });
-    }
-    setProjectDialogOpen(true);
-  };
-
-  const handleProjectClose = () => {
-    setProjectDialogOpen(false);
-    setCurrentProject(null);
-  };
-
-  const handleProjectSubmit = (project) => {
-    if (project.id) {
-      // Mise à jour d'un projet existant
-      setProjects(projects.map(p => p.id === project.id ? project : p));
-    } else {
-      // Ajout d'un nouveau projet
-      const newProject = {
-        ...project,
-        id: Math.max(0, ...projects.map(p => p.id)) + 1
-      };
-      setProjects([...projects, newProject]);
-    }
-    setProjectDialogOpen(false);
-  };
-
-  const handleDeleteProject = (id) => {
-    if (window.confirm('Êtes-vous sûr de vouloir supprimer ce projet ?')) {
-      setProjects(projects.filter(p => p.id !== id));
-    }
+  const handleSwitchPortfolio = (portfolioId) => {
+    switchPortfolio(portfolioId);
   };
 
   return (
@@ -271,7 +375,8 @@ const AdminDashboard = () => {
           variant="fullWidth"
         >
           <Tab icon={<PersonIcon />} label="Informations Personnelles" {...a11yProps(0)} />
-          <Tab icon={<WorkIcon />} label="Portfolio" {...a11yProps(1)} />
+          <Tab icon={<FolderIcon />} label="Mes Portfolios" {...a11yProps(1)} />
+          <Tab icon={<WorkIcon />} label="Contenu du Portfolio" {...a11yProps(2)} />
         </Tabs>
       </Box>
 
@@ -462,77 +567,320 @@ const AdminDashboard = () => {
         </form>
       </TabPanel>
 
-      {/* Onglet Portfolio */}
+      {/* Onglet Mes Portfolios */}
       <TabPanel value={tabValue} index={1}>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3, justifyContent: 'center' }}>
-          {categories.map((category) => (
+        <Box sx={{ mb: 3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <Typography variant="h5">
+              Gestion des Portfolios
+            </Typography>
             <Button
-              key={category.id}
-              variant={activeCategory === category.id ? 'contained' : 'outlined'}
-              onClick={() => setActiveCategory(category.id)}
-              startIcon={category.icon}
-              color={
-                category.id === 'experience' ? 'primary' :
-                category.id === 'education' ? 'secondary' :
-                category.id === 'competence' ? 'success' :
-                category.id === 'langue' ? 'warning' :
-                category.id === 'projet' ? 'info' : 'default'
-              }
+              variant="contained"
+              color="primary"
+              startIcon={<AddIcon />}
+              onClick={handleOpenCreatePortfolio}
             >
-              {category.label}
+              Créer un nouveau portfolio
             </Button>
-          ))}
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={() => {
-              // Si la catégorie active est 'projet', on pré-remplit avec cette catégorie
-              const newItem = {
-                title: '',
-                description: '',
-                imageUrl: 'https://via.placeholder.com/300x200',
-                technologies: '',
-                category: activeCategory === 'all' ? 'experience' : activeCategory,
-                projectUrl: '',
-                githubUrl: '',
-                company: '',
-                period: '',
-                location: '',
-                institution: '',
-                level: ''
-              };
-              handlePortfolioOpen(newItem);
-            }}
-            sx={{ ml: 'auto' }}
-          >
-            Ajouter {activeCategory === 'all' ? '' : 'un '}
-            {activeCategory === 'experience' ? 'Expérience' :
-             activeCategory === 'education' ? 'Formation' :
-             activeCategory === 'competence' ? 'Compétence' :
-             activeCategory === 'langue' ? 'Langue' :
-             activeCategory === 'projet' ? 'Projet' : 'Élément'}
-          </Button>
+          </Box>
+          
+          <Grid container spacing={3}>
+            {portfolios.map((portfolio) => {
+              const isActive = portfolio.id === activePortfolioId;
+              const expCount = portfolio.experiences?.length || 0;
+              const eduCount = portfolio.educations?.length || 0;
+              const skillCount = portfolio.skills?.length || 0;
+              const langCount = portfolio.languages?.length || 0;
+              const totalCount = expCount + eduCount + skillCount + langCount;
+
+              return (
+                <Grid item xs={12} md={6} key={portfolio.id}>
+                  <Card 
+                    sx={{ 
+                      border: isActive ? '2px solid' : '1px solid',
+                      borderColor: isActive ? 'primary.main' : 'divider',
+                      position: 'relative'
+                    }}
+                  >
+                    {isActive && (
+                      <Chip
+                        icon={<CheckCircleIcon />}
+                        label="Actif"
+                        color="success"
+                        size="small"
+                        sx={{ position: 'absolute', top: 16, right: 16 }}
+                      />
+                    )}
+                    <CardContent>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <FolderIcon sx={{ fontSize: 40, mr: 2, color: 'primary.main' }} />
+                        <Box>
+                          <Typography variant="h6" component="div">
+                            {portfolio.name}
+                          </Typography>
+                          <Chip 
+                            label={`${totalCount} élément${totalCount !== 1 ? 's' : ''}`} 
+                            size="small" 
+                            color="primary"
+                            variant="outlined"
+                          />
+                        </Box>
+                      </Box>
+                      
+                      <Box sx={{ mt: 2 }}>
+                        <Typography variant="body2" color="text.secondary">
+                          <WorkIcon sx={{ fontSize: 16, verticalAlign: 'middle', mr: 0.5 }} />
+                          {expCount} expérience{expCount !== 1 ? 's' : ''}
+                          {' • '}
+                          <SchoolIcon sx={{ fontSize: 16, verticalAlign: 'middle', mr: 0.5 }} />
+                          {eduCount} formation{eduCount !== 1 ? 's' : ''}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          <CodeIcon sx={{ fontSize: 16, verticalAlign: 'middle', mr: 0.5 }} />
+                          {skillCount} compétence{skillCount !== 1 ? 's' : ''}
+                          {' • '}
+                          <LanguageIcon sx={{ fontSize: 16, verticalAlign: 'middle', mr: 0.5 }} />
+                          {langCount} langue{langCount !== 1 ? 's' : ''}
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                    <CardActions sx={{ justifyContent: 'space-between', px: 2, pb: 2 }}>
+                      <Box>
+                        <IconButton
+                          size="small"
+                          color="primary"
+                          onClick={() => handleOpenRenamePortfolio(portfolio)}
+                          title="Renommer"
+                        >
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton
+                          size="small"
+                          color="error"
+                          onClick={() => handleDeletePortfolio(portfolio.id)}
+                          disabled={portfolios.length <= 1}
+                          title={portfolios.length <= 1 ? "Impossible de supprimer le dernier portfolio" : "Supprimer"}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </Box>
+                      {!isActive && (
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          onClick={() => handleSwitchPortfolio(portfolio.id)}
+                        >
+                          Activer
+                        </Button>
+                      )}
+                    </CardActions>
+                  </Card>
+                </Grid>
+              );
+            })}
+          </Grid>
         </Box>
-        
-        <PortfolioList 
-          portfolios={activeCategory === 'all' 
-            ? portfolios 
-            : portfolios.filter(item => item.category === activeCategory)
-          } 
-          onEdit={handlePortfolioOpen}
-          onDelete={handleDeletePortfolio}
-        />
       </TabPanel>
 
+      {/* Onglet Contenu du Portfolio */}
+      <TabPanel value={tabValue} index={2}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Typography variant="h5">
+            Contenu: {activePortfolio?.name || 'Portfolio'}
+          </Typography>
+          <Chip 
+            icon={<CheckCircleIcon />}
+            label="Portfolio actif" 
+            color="success"
+            variant="outlined"
+          />
+        </Box>
+        
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+          <Tabs 
+            value={portfolioTab} 
+            onChange={(e, newValue) => setPortfolioTab(newValue)}
+            variant="fullWidth"
+          >
+            <Tab 
+              label="Expériences" 
+              value="experiences" 
+              icon={<WorkIcon />}
+              iconPosition="start"
+            />
+            <Tab 
+              label="Formations" 
+              value="educations" 
+              icon={<SchoolIcon />}
+              iconPosition="start"
+            />
+            <Tab 
+              label="Compétences" 
+              value="skills" 
+              icon={<CodeIcon />}
+              iconPosition="start"
+            />
+            <Tab 
+              label="Langues" 
+              value="languages" 
+              icon={<LanguageIcon />}
+              iconPosition="start"
+            />
+          </Tabs>
+        </Box>
 
-{/* Dialogue Portfolio */}
-      <PortfolioForm
-        open={portfolioDialogOpen}
-        onClose={handlePortfolioClose}
-        portfolio={currentPortfolio}
-        onSubmit={handlePortfolioSubmit}
+        {/* Experiences Tab */}
+        {portfolioTab === 'experiences' && (
+          <Box>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<AddIcon />}
+                onClick={() => handleExperienceOpen()}
+              >
+                Ajouter une expérience
+              </Button>
+            </Box>
+            <ExperienceList 
+              experiences={experiences}
+              onEdit={handleExperienceOpen}
+              onDelete={handleDeleteExperience}
+            />
+          </Box>
+        )}
+
+        {/* Educations Tab */}
+        {portfolioTab === 'educations' && (
+          <Box>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+              <Button
+                variant="contained"
+                color="secondary"
+                startIcon={<AddIcon />}
+                onClick={() => handleEducationOpen()}
+              >
+                Ajouter une formation
+              </Button>
+            </Box>
+            <EducationList 
+              educations={educations}
+              onEdit={handleEducationOpen}
+              onDelete={handleDeleteEducation}
+            />
+          </Box>
+        )}
+
+        {/* Skills Tab */}
+        {portfolioTab === 'skills' && (
+          <Box>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+              <Typography variant="caption" color="text.secondary">
+                Les compétences sont stockées localement (non synchronisées avec le backend)
+              </Typography>
+              <Button
+                variant="contained"
+                color="success"
+                startIcon={<AddIcon />}
+                onClick={() => handleSkillOpen()}
+              >
+                Ajouter une compétence
+              </Button>
+            </Box>
+            <SkillList 
+              skills={skills}
+              onEdit={handleSkillOpen}
+              onDelete={handleDeleteSkill}
+            />
+          </Box>
+        )}
+
+        {/* Languages Tab */}
+        {portfolioTab === 'languages' && (
+          <Box>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+              <Typography variant="caption" color="text.secondary">
+                Les langues sont stockées localement (non synchronisées avec le backend)
+              </Typography>
+              <Button
+                variant="contained"
+                color="info"
+                startIcon={<AddIcon />}
+                onClick={() => handleLanguageOpen()}
+              >
+                Ajouter une langue
+              </Button>
+            </Box>
+            <LanguageList 
+              languages={languages}
+              onEdit={handleLanguageOpen}
+              onDelete={handleDeleteLanguage}
+            />
+          </Box>
+        )}
+      </TabPanel>
+
+      {/* Dialogs for each entity type */}
+      <ExperienceForm
+        open={experienceDialogOpen}
+        onClose={handleExperienceClose}
+        experience={currentExperience}
+        onSubmit={handleExperienceSubmit}
       />
+      
+      <EducationForm
+        open={educationDialogOpen}
+        onClose={handleEducationClose}
+        education={currentEducation}
+        onSubmit={handleEducationSubmit}
+      />
+      
+      <SkillForm
+        open={skillDialogOpen}
+        onClose={handleSkillClose}
+        skill={currentSkill}
+        onSubmit={handleSkillSubmit}
+      />
+      
+      <LanguageForm
+        open={languageDialogOpen}
+        onClose={handleLanguageClose}
+        language={currentLanguage}
+        onSubmit={handleLanguageSubmit}
+      />
+      
+      {/* Portfolio Management Dialog */}
+      <Dialog open={portfolioDialogOpen} onClose={handleClosePortfolioDialog} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          {portfolioDialogMode === 'create' ? 'Créer un nouveau portfolio' : 'Renommer le portfolio'}
+        </DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Nom du portfolio"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={portfolioDialogValue}
+            onChange={(e) => setPortfolioDialogValue(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                handleSubmitPortfolioDialog();
+              }
+            }}
+            sx={{ mt: 2 }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClosePortfolioDialog}>
+            Annuler
+          </Button>
+          <Button onClick={handleSubmitPortfolioDialog} variant="contained" color="primary">
+            {portfolioDialogMode === 'create' ? 'Créer' : 'Renommer'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

@@ -1,178 +1,269 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useProfile } from '../context/ProfileContext';
+import { formatPeriod, formatLocation } from '../utils/dateUtils';
 import { 
   Container, 
   Grid, 
   Card, 
   CardContent, 
-  CardMedia, 
   Typography, 
-  Button, 
   Box,
   Chip,
   Tabs,
   Tab,
-  Paper,
-  Divider
+  Paper
 } from '@mui/material';
 import WorkIcon from '@mui/icons-material/Work';
 import SchoolIcon from '@mui/icons-material/School';
 import CodeIcon from '@mui/icons-material/Code';
 import LanguageIcon from '@mui/icons-material/Language';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import PortfolioSelector from '../components/PortfolioSelector';
 
 const Portfolio = () => {
-  const { portfolios } = useProfile();
-  const [activeTab, setActiveTab] = useState('all');
+  const { experiences, educations, skills, languages, activePortfolio } = useProfile();
+  const [activeTab, setActiveTab] = useState('experiences');
 
-  // Filtrer les éléments par catégorie
-  const filteredItems = activeTab === 'all' 
-    ? portfolios 
-    : portfolios.filter(item => item.category === activeTab);
-
-  // Obtenir l'icône en fonction de la catégorie
-  const getCategoryIcon = (category) => {
-    switch(category) {
-      case 'experience':
-        return <WorkIcon />;
-      case 'education':
-        return <SchoolIcon />;
-      case 'competence':
-        return <CodeIcon />;
-      case 'langue':
-        return <LanguageIcon />;
-      case 'projet':
-        return <CodeIcon />;
-      default:
-        return null;
-    }
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
   };
 
-  // Obtenir la couleur de la catégorie
-  const getCategoryColor = (category) => {
-    switch(category) {
-      case 'experience':
-        return 'primary';
-      case 'education':
-        return 'secondary';
-      case 'competence':
-        return 'success';
-      case 'langue':
-        return 'info';
-      case 'projet':
-        return 'warning';
-      default:
-        return 'default';
-    }
-  };
+  // Render Experience Card
+  const renderExperienceCard = (exp) => (
+    <Grid item xs={12} md={6} key={exp.idExp}>
+      <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <CardContent sx={{ flexGrow: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <WorkIcon color="primary" sx={{ mr: 1 }} />
+            <Chip label="Expérience" color="primary" size="small" />
+          </Box>
+          <Typography variant="h6" gutterBottom>
+            {exp.position}
+          </Typography>
+          <Typography color="primary" gutterBottom sx={{ fontWeight: 'medium' }}>
+            {exp.employer}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            {formatPeriod(exp.startDate, exp.endDate, exp.ongoing)}
+          </Typography>
+          {(exp.city || exp.country) && (
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              <LocationOnIcon sx={{ fontSize: 14, verticalAlign: 'middle', mr: 0.5 }} />
+              {formatLocation(exp.city, exp.country)}
+            </Typography>
+          )}
+          {exp.responsibilities && (
+            <Typography variant="body2" sx={{ mt: 2 }}>
+              {exp.responsibilities}
+            </Typography>
+          )}
+        </CardContent>
+      </Card>
+    </Grid>
+  );
 
-  // Formater la date pour l'affichage
-  const formatDate = (dateString) => {
-    if (!dateString) return '';
-    const options = { year: 'numeric', month: 'long' };
-    return new Date(dateString).toLocaleDateString('fr-FR', options);
-  };
+  // Render Education Card
+  const renderEducationCard = (edu) => (
+    <Grid item xs={12} md={6} key={edu.idEdu}>
+      <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <CardContent sx={{ flexGrow: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <SchoolIcon color="secondary" sx={{ mr: 1 }} />
+            <Chip label="Formation" color="secondary" size="small" />
+          </Box>
+          <Typography variant="h6" gutterBottom>
+            {edu.titleOfQualification}
+          </Typography>
+          <Typography color="secondary" gutterBottom sx={{ fontWeight: 'medium' }}>
+            {edu.training}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            {formatPeriod(edu.startDate, edu.endDate, edu.ongoing)}
+          </Typography>
+          {(edu.city || edu.country) && (
+            <Typography variant="body2" color="text.secondary">
+              <LocationOnIcon sx={{ fontSize: 14, verticalAlign: 'middle', mr: 0.5 }} />
+              {formatLocation(edu.city, edu.country)}
+            </Typography>
+          )}
+        </CardContent>
+      </Card>
+    </Grid>
+  );
+
+  // Render Skill Card
+  const renderSkillCard = (skill) => (
+    <Grid item xs={12} sm={6} md={4} key={skill.id}>
+      <Card sx={{ height: '100%' }}>
+        <CardContent>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <CodeIcon color="success" sx={{ mr: 1 }} />
+            <Chip label="Compétence" color="success" size="small" />
+          </Box>
+          <Typography variant="h6" gutterBottom>
+            {skill.title}
+          </Typography>
+          {skill.technologies && (
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              {skill.technologies}
+            </Typography>
+          )}
+          {skill.description && (
+            <Typography variant="body2" sx={{ mt: 1 }}>
+              {skill.description}
+            </Typography>
+          )}
+        </CardContent>
+      </Card>
+    </Grid>
+  );
+
+  // Render Language Card
+  const renderLanguageCard = (lang) => (
+    <Grid item xs={12} sm={6} md={4} key={lang.id}>
+      <Card sx={{ height: '100%' }}>
+        <CardContent>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <LanguageIcon color="info" sx={{ mr: 1 }} />
+            <Chip label="Langue" color="info" size="small" />
+          </Box>
+          <Typography variant="h6" gutterBottom>
+            {lang.title}
+          </Typography>
+          {lang.level && (
+            <Typography variant="body2" color="text.secondary">
+              Niveau: {lang.level}
+            </Typography>
+          )}
+          {lang.description && (
+            <Typography variant="body2" sx={{ mt: 1 }}>
+              {lang.description}
+            </Typography>
+          )}
+        </CardContent>
+      </Card>
+    </Grid>
+  );
 
   return (
     <Container maxWidth="lg" sx={{ py: 8 }}>
-      <Box sx={{ textAlign: 'center', mb: 6 }}>
-        <Typography variant="h3" component="h1" gutterBottom>
-          Mon Portfolio
-        </Typography>
-        <Typography variant="h6" color="text.secondary" paragraph>
-          Découvrez mes projets, compétences et expériences
-        </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box>
+          <Typography variant="h3" component="h1" gutterBottom>
+            Mon Portfolio
+          </Typography>
+          <Typography variant="h6" color="text.secondary">
+            Découvrez mon parcours professionnel, mes formations et mes compétences
+          </Typography>
+        </Box>
+        <PortfolioSelector />
       </Box>
 
-      <Paper sx={{ mb: 4, borderRadius: 2, overflow: 'hidden' }}>
-        <Tabs
-          value={activeTab}
-          onChange={(e, newValue) => setActiveTab(newValue)}
-          variant="scrollable"
-          scrollButtons="auto"
-          sx={{
-            '& .MuiTabs-indicator': {
-              display: 'none',
-            },
-            '& .Mui-selected': {
-              backgroundColor: 'primary.main',
-              color: 'white !important',
-              borderRadius: '4px',
-            }
-          }}
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 4 }}>
+        <Tabs 
+          value={activeTab} 
+          onChange={handleTabChange}
+          centered
+          variant="fullWidth"
         >
-          <Tab label="Tous" value="all" />
-          <Tab label="Expériences" value="experience" icon={<WorkIcon />} iconPosition="start" />
-          <Tab label="Formations" value="education" icon={<SchoolIcon />} iconPosition="start" />
-          <Tab label="Compétences" value="competence" icon={<CodeIcon />} iconPosition="start" />
-          <Tab label="Langues" value="langue" icon={<LanguageIcon />} iconPosition="start" />
-          <Tab label="Projets" value="projet" icon={<CodeIcon />} iconPosition="start" />
+          <Tab 
+            label="Expériences" 
+            value="experiences" 
+            icon={<WorkIcon />}
+            iconPosition="start"
+          />
+          <Tab 
+            label="Formations" 
+            value="educations" 
+            icon={<SchoolIcon />}
+            iconPosition="start"
+          />
+          <Tab 
+            label="Compétences" 
+            value="skills" 
+            icon={<CodeIcon />}
+            iconPosition="start"
+          />
+          <Tab 
+            label="Langues" 
+            value="languages" 
+            icon={<LanguageIcon />}
+            iconPosition="start"
+          />
         </Tabs>
-      </Paper>
+      </Box>
 
-      <Grid container spacing={4}>
-        {filteredItems.length > 0 ? (
-          filteredItems.map((item) => (
-            <Grid item xs={12} md={6} lg={4} key={item.id}>
-              <Card sx={{ 
-                height: '100%', 
-                display: 'flex', 
-                flexDirection: 'column',
-                transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
-                '&:hover': {
-                  transform: 'translateY(-5px)',
-                  boxShadow: 6,
-                }
-              }}>
-                {item.imageUrl && (
-                  <CardMedia
-                    component="img"
-                    height="200"
-                    image={item.imageUrl}
-                    alt={item.title}
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = 'https://via.placeholder.com/300x200';
-                    }}
-                  />
-                )}
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <Box sx={{ 
-                      backgroundColor: `${getCategoryColor(item.category)}.light`, 
-                      p: 0.5, 
-                      borderRadius: 1,
-                      display: 'flex',
-                      mr: 1
-                    }}>
-                      {getCategoryIcon(item.category)}
-                    </Box>
-                    <Typography variant="h6" component="h3">
-                      {item.title}
-                    </Typography>
-                  </Box>
-                  
-                  <Typography variant="body2" color="text.secondary" paragraph>
-                    {item.description}
-                  </Typography>
-                  
-                  {item.technologies && (
-                    <Box sx={{ mt: 'auto', pt: 2 }}>
-                      <Divider sx={{ mb: 1 }} />
-                      <Typography variant="caption" color="text.secondary">
-                        Technologies: {item.technologies}
-                      </Typography>
-                    </Box>
-                  )}
-                </CardContent>
-              </Card>
+      <Grid container spacing={3}>
+        {activeTab === 'experiences' && (
+          experiences.length > 0 ? (
+            experiences.map(renderExperienceCard)
+          ) : (
+            <Grid item xs={12}>
+              <Paper sx={{ p: 4, textAlign: 'center' }}>
+                <WorkIcon sx={{ fontSize: 60, color: 'text.secondary', mb: 2 }} />
+                <Typography variant="h6" color="text.secondary">
+                  Aucune expérience professionnelle
+                </Typography>
+                <Typography color="text.secondary">
+                  Ajoutez vos expériences depuis le tableau de bord administrateur
+                </Typography>
+              </Paper>
             </Grid>
-          ))
-        ) : (
-          <Grid item xs={12} sx={{ textAlign: 'center', py: 4 }}>
-            <Typography variant="body1" color="text.secondary">
-              Aucun élément à afficher pour le moment.
-            </Typography>
-          </Grid>
+          )
+        )}
+
+        {activeTab === 'educations' && (
+          educations.length > 0 ? (
+            educations.map(renderEducationCard)
+          ) : (
+            <Grid item xs={12}>
+              <Paper sx={{ p: 4, textAlign: 'center' }}>
+                <SchoolIcon sx={{ fontSize: 60, color: 'text.secondary', mb: 2 }} />
+                <Typography variant="h6" color="text.secondary">
+                  Aucune formation
+                </Typography>
+                <Typography color="text.secondary">
+                  Ajoutez vos formations depuis le tableau de bord administrateur
+                </Typography>
+              </Paper>
+            </Grid>
+          )
+        )}
+
+        {activeTab === 'skills' && (
+          skills.length > 0 ? (
+            skills.map(renderSkillCard)
+          ) : (
+            <Grid item xs={12}>
+              <Paper sx={{ p: 4, textAlign: 'center' }}>
+                <CodeIcon sx={{ fontSize: 60, color: 'text.secondary', mb: 2 }} />
+                <Typography variant="h6" color="text.secondary">
+                  Aucune compétence
+                </Typography>
+                <Typography color="text.secondary">
+                  Les compétences sont stockées localement (non synchronisées avec le backend)
+                </Typography>
+              </Paper>
+            </Grid>
+          )
+        )}
+
+        {activeTab === 'languages' && (
+          languages.length > 0 ? (
+            languages.map(renderLanguageCard)
+          ) : (
+            <Grid item xs={12}>
+              <Paper sx={{ p: 4, textAlign: 'center' }}>
+                <LanguageIcon sx={{ fontSize: 60, color: 'text.secondary', mb: 2 }} />
+                <Typography variant="h6" color="text.secondary">
+                  Aucune langue
+                </Typography>
+                <Typography color="text.secondary">
+                  Les langues sont stockées localement (non synchronisées avec le backend)
+                </Typography>
+              </Paper>
+            </Grid>
+          )
         )}
       </Grid>
     </Container>

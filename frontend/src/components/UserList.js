@@ -63,8 +63,8 @@ function UserList() {
             <tr>
               {/* Colonnes du tableau */}
               <th align="left">ID</th>
-              <th align="left">Nom</th>
               <th align="left">Email</th>
+              <th align="left">Date de création</th>
             </tr>
           </thead>
           <tbody>
@@ -72,8 +72,8 @@ function UserList() {
               // Une ligne par utilisateur
               <tr key={u.id} style={{ borderTop: '1px solid #eee' }}>
                 <td>{u.id}</td>
-                <td>{u.name}</td>
                 <td>{u.email}</td>
+                <td>{u.createdAt ? new Date(u.createdAt).toLocaleDateString('fr-FR') : '-'}</td>
               </tr>
             ))}
           </tbody>

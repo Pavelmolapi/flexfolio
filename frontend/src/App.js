@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { Routes, Route, Link, Navigate } from 'react-router-dom';
-import { FiMenu, FiX, FiHome, FiUser, FiBriefcase, FiMail, FiGithub, FiLinkedin, FiSettings, FiLogOut } from 'react-icons/fi';
+import { FiMenu, FiX, FiHome, FiUser, FiBriefcase, FiGithub, FiLinkedin, FiSettings, FiLogOut } from 'react-icons/fi';
 import { Box, Container } from '@mui/material';
 import './App.css';
 import AdminDashboard from './components/Admin/AdminDashboard';
 import About from './pages/About';
 import Portfolio from './pages/Portfolio';
-import Contact from './pages/Contact';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -45,7 +44,10 @@ const AppContent = () => {
                 <img 
                   src={profile.profileImage || '/profile.jpg'} 
                   alt={profile.fullName || 'Photo de profil'}
-                  onError={(e) => {e.target.onerror = null; e.target.src='https://via.placeholder.com/150'}}
+                  onError={(e) => {
+                    e.target.onerror = null; 
+                    e.target.src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="150" height="150"%3E%3Crect fill="%23ddd" width="150" height="150"/%3E%3Ctext fill="rgba(0,0,0,0.5)" font-family="sans-serif" font-size="40" dy="0.35em" x="50%25" y="50%25" text-anchor="middle"%3E👤%3C/text%3E%3C/svg%3E'
+                  }}
                   style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
                 />
               </div>
@@ -63,10 +65,6 @@ const AppContent = () => {
               <Link to="/portfolio" className="nav-item" onClick={() => setIsMenuOpen(false)}>
                 <FiBriefcase className="nav-icon" />
                 <span>Portfolio</span>
-              </Link>
-              <Link to="/contact" className="nav-item" onClick={() => setIsMenuOpen(false)}>
-                <FiMail className="nav-icon" />
-                <span>Contact</span>
               </Link>
               <Link to="/admin" className="nav-item" onClick={() => setIsMenuOpen(false)}>
                 <FiSettings className="nav-icon" />
@@ -131,14 +129,6 @@ const AppContent = () => {
               element={
                 <ProtectedRoute>
                   <Portfolio />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/contact" 
-              element={
-                <ProtectedRoute>
-                  <Contact />
                 </ProtectedRoute>
               } 
             />

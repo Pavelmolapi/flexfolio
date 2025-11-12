@@ -1,5 +1,6 @@
 import React from 'react';
 import { useProfile } from '../context/ProfileContext';
+import { formatPeriod, formatLocation } from '../utils/dateUtils';
 import { Box, Typography, Container, Grid, Paper, Divider } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
@@ -8,18 +9,21 @@ import WorkIcon from '@mui/icons-material/Work';
 import SchoolIcon from '@mui/icons-material/School';
 import CodeIcon from '@mui/icons-material/Code';
 import LanguageIcon from '@mui/icons-material/Language';
+import PortfolioSelector from '../components/PortfolioSelector';
 
 const About = () => {
-  const { profile } = useProfile();
-
-  // Filtrer les éléments du portfolio par catégorie
-  const experienceItems = profile.portfolios?.filter(item => item.category === 'experience') || [];
-  const educationItems = profile.portfolios?.filter(item => item.category === 'education') || [];
-  const competenceItems = profile.portfolios?.filter(item => item.category === 'competence') || [];
-  const languageItems = profile.portfolios?.filter(item => item.category === 'langue') || [];
+  const { profile, experiences, educations, skills, languages, activePortfolio } = useProfile();
 
   return (
     <Container maxWidth="lg" sx={{ py: 8 }}>
+      {/* Portfolio Selector at the top */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+        <Typography variant="h3" component="h1">
+          À Propos
+        </Typography>
+        <PortfolioSelector />
+      </Box>
+
       <Grid container spacing={6}>
         <Grid item xs={12} md={4}>
           <Paper elevation={3} sx={{ p: 4, position: 'sticky', top: 20 }}>
@@ -78,18 +82,24 @@ const About = () => {
               <WorkIcon color="primary" sx={{ mr: 1 }} />
               Expérience Professionnelle
             </Typography>
-            {experienceItems.length > 0 ? (
-              experienceItems.map((exp) => (
-                <Box key={exp.id} sx={{ mb: 3 }}>
-                  <Typography variant="h6">{exp.title}</Typography>
-                  {exp.company && (
-                    <Typography color="primary" sx={{ fontWeight: 'medium' }}>{exp.company}</Typography>
+            {experiences.length > 0 ? (
+              experiences.map((exp) => (
+                <Box key={exp.idExp} sx={{ mb: 3 }}>
+                  <Typography variant="h6">{exp.position}</Typography>
+                  {exp.employer && (
+                    <Typography color="primary" sx={{ fontWeight: 'medium' }}>{exp.employer}</Typography>
                   )}
-                  {exp.period && (
-                    <Typography color="text.secondary" sx={{ fontStyle: 'italic' }}>{exp.period}</Typography>
+                  <Typography color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                    {formatPeriod(exp.startDate, exp.endDate, exp.ongoing)}
+                  </Typography>
+                  {(exp.city || exp.country) && (
+                    <Typography color="text.secondary">
+                      <LocationOnIcon sx={{ fontSize: 16, verticalAlign: 'middle', mr: 0.5 }} />
+                      {formatLocation(exp.city, exp.country)}
+                    </Typography>
                   )}
-                  {exp.description && (
-                    <Typography>{exp.description}</Typography>
+                  {exp.responsibilities && (
+                    <Typography sx={{ mt: 1 }}>{exp.responsibilities}</Typography>
                   )}
                 </Box>
               ))
@@ -103,18 +113,21 @@ const About = () => {
               <SchoolIcon color="primary" sx={{ mr: 1 }} />
               Formation
             </Typography>
-            {educationItems.length > 0 ? (
-              educationItems.map((edu) => (
-                <Box key={edu.id} sx={{ mb: 3 }}>
-                  <Typography variant="h6">{edu.title || 'Formation'}</Typography>
-                  {edu.institution && (
-                    <Typography color="primary" sx={{ fontWeight: 'medium' }}>{edu.institution}</Typography>
+            {educations.length > 0 ? (
+              educations.map((edu) => (
+                <Box key={edu.idEdu} sx={{ mb: 3 }}>
+                  <Typography variant="h6">{edu.titleOfQualification}</Typography>
+                  {edu.training && (
+                    <Typography color="primary" sx={{ fontWeight: 'medium' }}>{edu.training}</Typography>
                   )}
-                  {edu.period && (
-                    <Typography color="text.secondary">{edu.period}</Typography>
-                  )}
-                  {edu.description && (
-                    <Typography>{edu.description}</Typography>
+                  <Typography color="text.secondary">
+                    {formatPeriod(edu.startDate, edu.endDate, edu.ongoing)}
+                  </Typography>
+                  {(edu.city || edu.country) && (
+                    <Typography color="text.secondary">
+                      <LocationOnIcon sx={{ fontSize: 16, verticalAlign: 'middle', mr: 0.5 }} />
+                      {formatLocation(edu.city, edu.country)}
+                    </Typography>
                   )}
                 </Box>
               ))
@@ -131,14 +144,14 @@ const About = () => {
                   Compétences
                 </Typography>
                 <Grid container spacing={2}>
-                  {competenceItems.length > 0 ? (
-                    competenceItems.map((skill) => (
+                  {skills.length > 0 ? (
+                    skills.map((skill) => (
                       <Grid item xs={12} sm={6} key={skill.id}>
                         <Box sx={{ mb: 2 }}>
                           <Typography variant="subtitle1" sx={{ fontWeight: 'medium' }}>{skill.title}</Typography>
                           {skill.technologies && (
                             <Typography variant="body2" color="text.secondary">
-                              Technologies: {skill.technologies}
+                              {skill.technologies}
                             </Typography>
                           )}
                           {skill.description && (
@@ -161,13 +174,13 @@ const About = () => {
                   Langues
                 </Typography>
                 <Grid container spacing={2}>
-                  {languageItems.length > 0 ? (
-                    languageItems.map((lang) => (
+                  {languages.length > 0 ? (
+                    languages.map((lang) => (
                       <Grid item xs={12} sm={6} key={lang.id}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                           <Typography>{lang.title || 'Langue'}</Typography>
                           {lang.level && (
-                            <Typography color="text.secondary">Niveau: {lang.level}</Typography>
+                            <Typography color="text.secondary">{lang.level}</Typography>
                           )}
                         </Box>
                         {lang.description && (

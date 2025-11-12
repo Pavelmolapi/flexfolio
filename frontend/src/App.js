@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { Routes, Route, Link, Navigate } from 'react-router-dom';
 import { FiMenu, FiX, FiHome, FiUser, FiBriefcase, FiMail, FiGithub, FiLinkedin, FiSettings } from 'react-icons/fi';
 import { Box, Container } from '@mui/material';
 import './App.css';
@@ -91,9 +91,7 @@ const AppContent = () => {
 function App() {
   return (
     <ProfileProvider>
-      <Router>
-        <AppContent />
-      </Router>
+      <AppContent />
     </ProfileProvider>
   );
 }

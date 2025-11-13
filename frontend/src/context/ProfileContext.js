@@ -231,12 +231,25 @@ export const ProfileProvider = ({ children }) => {
             if (!portfolioId) {
               console.error('⚠️ Portfolio from backend missing ID:', p);
             }
+            
+            // Transform experiences: map backend 'id' to frontend 'idExp'
+            const experiences = (p.experiences || []).map(exp => ({
+              ...exp,
+              idExp: exp.id // Backend uses 'id', frontend uses 'idExp'
+            }));
+            
+            // Transform educations: map backend 'id' to frontend 'idEdu'
+            const educations = (p.educations || []).map(edu => ({
+              ...edu,
+              idEdu: edu.id // Backend uses 'id', frontend uses 'idEdu'
+            }));
+            
             return {
               id: portfolioId,
               backendId: portfolioId, // Keep backend ID for API calls
               name: p.name || 'Portfolio',
-              experiences: p.experiences || [],
-              educations: p.educations || [],
+              experiences: experiences,
+              educations: educations,
               skills: [], // Skills not in backend yet
               languages: [] // Languages not in backend yet
             };
@@ -432,7 +445,13 @@ export const ProfileProvider = ({ children }) => {
       
       // Call backend API
       const response = await portfolioService.createExperience(portfolioId, experience);
-      const newExperience = response.data;
+      const backendExperience = response.data;
+      
+      // Transform backend response: map 'id' to 'idExp'
+      const newExperience = {
+        ...backendExperience,
+        idExp: backendExperience.id // Backend uses 'id', frontend uses 'idExp'
+      };
       
       console.log('Experience created in backend:', newExperience);
       
@@ -462,9 +481,15 @@ export const ProfileProvider = ({ children }) => {
     try {
       console.log('Updating experience:', idExp, updates);
       
-      // Call backend API
+      // Call backend API (backend expects 'id' field)
       const response = await portfolioService.updateExperience(idExp, updates);
-      const updatedExperience = response.data;
+      const backendExperience = response.data;
+      
+      // Transform backend response: map 'id' to 'idExp'
+      const updatedExperience = {
+        ...backendExperience,
+        idExp: backendExperience.id // Backend uses 'id', frontend uses 'idExp'
+      };
       
       console.log('Experience updated in backend:', updatedExperience);
       
@@ -540,7 +565,13 @@ export const ProfileProvider = ({ children }) => {
       
       // Call backend API
       const response = await portfolioService.createEducation(portfolioId, education);
-      const newEducation = response.data;
+      const backendEducation = response.data;
+      
+      // Transform backend response: map 'id' to 'idEdu'
+      const newEducation = {
+        ...backendEducation,
+        idEdu: backendEducation.id // Backend uses 'id', frontend uses 'idEdu'
+      };
       
       console.log('Education created in backend:', newEducation);
       
@@ -570,9 +601,15 @@ export const ProfileProvider = ({ children }) => {
     try {
       console.log('Updating education:', idEdu, updates);
       
-      // Call backend API
+      // Call backend API (backend expects 'id' field)
       const response = await portfolioService.updateEducation(idEdu, updates);
-      const updatedEducation = response.data;
+      const backendEducation = response.data;
+      
+      // Transform backend response: map 'id' to 'idEdu'
+      const updatedEducation = {
+        ...backendEducation,
+        idEdu: backendEducation.id // Backend uses 'id', frontend uses 'idEdu'
+      };
       
       console.log('Education updated in backend:', updatedEducation);
       

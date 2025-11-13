@@ -37,11 +37,18 @@ export const ExperienceForm = ({ open, onClose, experience, onSubmit }) => {
   });
 
   useEffect(() => {
-    if (experience) setFormData(experience);
-    else setFormData({
-      position: '', employer: '', city: '', country: '',
-      startDate: '', endDate: '', responsibilities: '', ongoing: false
-    });
+    if (experience) {
+      // Include idExp when editing
+      setFormData({
+        ...experience,
+        idExp: experience.idExp // Ensure ID is preserved
+      });
+    } else {
+      setFormData({
+        position: '', employer: '', city: '', country: '',
+        startDate: '', endDate: '', responsibilities: '', ongoing: false
+      });
+    }
   }, [experience]);
 
   const handleChange = (e) => {
@@ -92,8 +99,15 @@ export const EducationForm = ({ open, onClose, education, onSubmit }) => {
   });
 
   useEffect(() => {
-    if (education) setFormData(education);
-    else setFormData({ titleOfQualification: '', training: '', city: '', country: '', startDate: '', endDate: '', ongoing: false });
+    if (education) {
+      // Include idEdu when editing
+      setFormData({
+        ...education,
+        idEdu: education.idEdu // Ensure ID is preserved
+      });
+    } else {
+      setFormData({ titleOfQualification: '', training: '', city: '', country: '', startDate: '', endDate: '', ongoing: false });
+    }
   }, [education]);
 
   const handleChange = (e) => {

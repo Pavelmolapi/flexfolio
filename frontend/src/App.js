@@ -68,7 +68,7 @@ const AppContent = () => {
               </Link>
               <Link to="/admin" className="nav-item" onClick={() => setIsMenuOpen(false)}>
                 <FiSettings className="nav-icon" />
-                <span>Admin</span>
+                <span>Modification</span>
               </Link>
               <button 
                 onClick={handleLogout}

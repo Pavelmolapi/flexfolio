@@ -7,6 +7,6 @@ import java.util.List;
 
 @Repository
 public interface ExperienceRepository extends JpaRepository<ExperienceEntity, Long> {
-    List<ExperienceEntity> findByPortfolioId(Long portfolioId);
+    List<ExperienceEntity> findByPortfolioId(Long id);
 }
 

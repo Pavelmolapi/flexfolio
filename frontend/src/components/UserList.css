@@ -1,31 +1,37 @@
 .user-list {
+  /* La zone de la liste des utilisateurs */
   width: 100%;
 }
 
 .user-list h2 {
+  /* Le titre "Utilisateurs" */
   color: #282c34;
   margin-bottom: 30px;
 }
 
 .loading, .error {
+  /* Affichage quand ça charge ou quand il y a une erreur */
   font-size: 1.2rem;
   padding: 20px;
   margin: 20px 0;
 }
 
 .error {
+  /* Style pour les messages d'erreur */
   color: #d32f2f;
   background-color: #ffebee;
   border-radius: 5px;
 }
 
 .no-users {
+  /* Message si la liste est vide */
   color: #666;
   font-size: 1.1rem;
   margin-top: 30px;
 }
 
 table {
+  /* Le tableau qui affiche les utilisateurs */
   width: 100%;
   border-collapse: collapse;
   background-color: white;
@@ -35,24 +41,29 @@ table {
 }
 
 thead {
+  /* Ligne d'en-tête du tableau */
   background-color: #282c34;
   color: white;
 }
 
 th, td {
+  /* Les cases du tableau */
   padding: 15px;
   text-align: left;
 }
 
 tbody tr {
+  /* Ligne séparatrice entre les éléments */
   border-bottom: 1px solid #f0f0f0;
 }
 
 tbody tr:hover {
+  /* Effet quand on passe la souris sur une ligne */
   background-color: #f5f5f5;
 }
 
 .delete-btn {
+  /* Bouton pour supprimer */
   background-color: #d32f2f;
   color: white;
   border: none;
@@ -64,5 +75,6 @@ tbody tr:hover {
 }
 
 .delete-btn:hover {
+  /* Effet quand on passe la souris sur le bouton */
   background-color: #b71c1c;
 }

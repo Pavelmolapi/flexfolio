@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const USE_MOCK = process.env.REACT_APP_USE_MOCK === 'true';
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
+// Prefer env var; otherwise use relative path so CRA proxy can handle it in dev
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,

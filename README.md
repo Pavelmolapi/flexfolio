@@ -1,117 +1,147 @@
-<div align="center">
-  <h1>🌟 FlexFolio 🌟</h1>
-  <p>
-    <strong>A full-stack application with React frontend and Spring Boot backend</strong>
-  </p>
+<h1 align="center">FlexFolio</h1>
+<p align="center"><strong>Full‑stack portfolio & experience management platform</strong></p>
 
-  ![GitHub repo size](https://img.shields.io/github/repo-size/yourusername/FlexFolio)
-  ![GitHub stars](https://img.shields.io/github/stars/yourusername/FlexFolio?style=social)
-  ![GitHub forks](https://img.shields.io/github/forks/yourusername/FlexFolio?style=social)
-  ![GitHub issues](https://img.shields.io/github/issues/yourusername/FlexFolio)
-  ![GitHub license](https://img.shields.io/github/license/yourusername/FlexFolio)
-</div>
+<p align="center">
+React (frontend) · Spring Boot (backend) · PostgreSQL · JWT Auth · Multi‑Portfolio · Docker
+</p>
 
 ---
 
-## 📂 Project Structure
+## 1. Overview
+FlexFolio lets authenticated users build and manage multiple professional portfolios containing Experiences and Educations (with future extensions for Skills/Languages). It implements secure JWT authentication, consistent backend–frontend field mapping, and a multi‑portfolio context layer with CRUD operations.
 
+## 2. Tech Stack
+| Layer | Technologies |
+|-------|-------------|
+| Frontend | React 18, React Router v6, MUI, Axios |
+| Backend | Spring Boot 3, Spring Security, Spring Data JPA |
+| Auth | JWT (HMAC SHA‑256, 24h expiry) |
+| Database | PostgreSQL (dev via Docker; H2 optional) |
+| Build/Runtime | Maven, Java 17 |
+| DevOps | Docker & root docker‑compose (db + backend + frontend) |
+
+## 3. Architecture
+```
+Browser ─ React (Context: Auth + Profile/Portfolios)
+          │
+          ▼
+Axios → /api/* (JWT in Authorization header)
+          │
+          ▼
+Spring Boot (Controllers → Services → Repositories → PostgreSQL)
+```
+
+Core backend entities (DTOs returned to frontend):
+• Portfolio: id, userId, experiences[], educations[]
+• Experience: id, position, employer, city, country, startDate, endDate, responsibilities, ongoing, portfolioId
+• Education: id, titleOfQualification, training, city, country, startDate, endDate, ongoing, portfolioId
+
+## 4. Authentication & Security
+Public endpoints: `/api/auth/register`, `/api/auth/login`, `/api/auth/validate`.
+Protected endpoints require `Authorization: Bearer <token>`.
+Token includes: `accessToken`, `tokenType`, `userId`, `email`, `expiresIn` (ms).
+Stateless security (no HTTP session). Automatic 401 on invalid/expired token.
+
+## 5. Multi‑Portfolio System
+ProfileContext manages an array of portfolios plus `activePortfolioId`. Each portfolio contains arrays for experiences & educations (skills/languages currently local only). Operations:
+• createPortfolio(name) – creates & activates
+• updatePortfolio(id, updates) – rename
+• deletePortfolio(id) – guarded (cannot remove last)
+• switchPortfolio(id) – activate another
+
+## 6. CRUD & ID Mapping Fix
+Original mismatch: backend used `id` while frontend expected `idExp` / `idEdu`. Resolved by transforming responses:
+• Experiences mapped: `id -> idExp`
+• Educations mapped: `id -> idEdu`
+All update/delete operations now reference correct IDs, preventing silent failures.
+
+## 7. Key Frontend Context Responsibilities
+AuthContext: stores token, user info, login/logout, token validation.
+ProfileContext: portfolios, active portfolio selection, CRUD wrappers calling `portfolioService` (Axios). Local-only profile metadata (fullName, jobTitle, etc.) kept in localStorage.
+
+## 8. API Summary
+```
+POST   /api/auth/register            (public)
+POST   /api/auth/login               (public)
+POST   /api/auth/validate            (public)
+
+GET    /api/portfolios               (auth)
+GET    /api/portfolios/{id}          (auth)
+POST   /api/portfolios/{userId}      (auth)
+PUT    /api/portfolios/{id}          (auth)
+DELETE /api/portfolios/{id}          (auth)
+
+POST   /api/experiences/{portfolioId}  (auth)
+PUT    /api/experiences/{id}           (auth)
+DELETE /api/experiences/{id}           (auth)
+
+POST   /api/educations/{portfolioId}   (auth)
+PUT    /api/educations/{id}            (auth)
+DELETE /api/educations/{id}            (auth)
+```
+
+## 9. Docker & Environment
+Root `docker-compose.yml` orchestrates Postgres, backend, frontend.
+Frontend uses `REACT_APP_API_BASE_URL` (set to `http://localhost:8080/api` in Docker) and falls back to relative `/api` with CRA proxy for local dev.
+Backend `application.yml` reads datasource/env overrides:
+```
+SPRING_DATASOURCE_URL
+SPRING_DATASOURCE_USERNAME
+SPRING_DATASOURCE_PASSWORD
+SPRING_JPA_HIBERNATE_DDL_AUTO
+```
+
+### Quick Start (Docker)
 ```bash
-flexfolio/
-├── backend/          # 🚀 Spring Boot backend
-└── frontend/         # ✨ React frontend
+docker compose up --build
+# Frontend: http://localhost:3000
+# Backend:  http://localhost:8080
+```
 
-🛠 Backend (Spring Boot)
-📋 Prerequisites
+### Local Dev
+```bash
+# Backend
+cd backend
+mvn spring-boot:run
 
-Java 17 or higher
-Maven 3.6+
+# Frontend (in another terminal)
+cd frontend
+npm install
+npm start
+```
 
-🚀 Running the Backend
+## 10. Testing Guidelines
+Use Postman (or curl) for auth + protected resource verification:
+```bash
+curl -X POST http://localhost:8080/api/auth/register -H 'Content-Type: application/json' -d '{"email":"user@example.com","password":"pass"}'
+curl -X POST http://localhost:8080/api/auth/login    -H 'Content-Type: application/json' -d '{"email":"user@example.com","password":"pass"}'
+curl -H 'Authorization: Bearer <TOKEN>' http://localhost:8080/api/portfolios
+```
 
-Navigate to the backend directory:
-bash Copiercd backend
+Frontend manual tests:
+• Create portfolio → add experience → refresh → persists.
+• Rename portfolio → selector updates.
+• Delete non-active portfolio → list shrinks.
+• Attempt delete last portfolio → blocked with warning.
+• Edit experience → verify update reflected.
 
-Run the application:
-bash Copiermvn spring-boot\:run
-The backend will start on http://localhost:8080
+## 11. Future Roadmap
+| Feature | Description |
+|---------|-------------|
+| Skills/Languages backend | Add entities & endpoints mirroring local-only data |
+| Public portfolio share | Generate public read-only portfolio page |
+| Project entity | Support project showcases with links & media |
+| Refresh tokens | Enhance auth security stance |
+| Role-based auth | Admin vs user permissions |
+| Export/Import | JSON export/import of portfolio data |
 
-📡 API Endpoints
-MethodEndpointDescriptionGET/api/usersGet all usersGET/api/users/{id}Get user by IDPOST/api/usersCreate a new userPUT/api/users/{id}Update a userDELETE/api/users/{id}Delete a user
-🗄 H2 Console
-Access the H2 database console at http://localhost:8080/h2-console
+## 12. Contribution
+Fork → branch (`feature/...` or `fix/...`) → PR. Follow conventional commits (e.g., `feat:`, `fix:`, `chore:`).
 
-JDBC URL: jdbc:h2:mem:flexfoliodb
-Username: sa
-Password: (leave blank)
+## 13. License
+MIT License (add license file if not present).
 
+---
+**Status:** Active development. Multi‑portfolio, JWT auth, Docker orchestration functional. Skills/Languages currently local-only.
 
-🎨 Frontend (React)
-📋 Prerequisites
-
-Node.js 16+ and npm
-
-🚀 Running the Frontend
-
-Navigate to the frontend directory:
-bash Copiercd frontend
-
-Install dependencies:
-bash Copiernpm install
-
-Start the development server:
-bash Copiernpm start
-The frontend will start on http://localhost:3000
-
-
-✨ Features
-
-User Management: Create, read, update, and delete users
-RESTful API: Clean REST API architecture
-Responsive UI: Modern React interface with routing
-CORS Enabled: Frontend and backend communication configured
-H2 Database: In-memory database for development
-
-
-🛠 Technology Stack
-Backend
-
-Spring Boot 3.2.0
-Spring Data JPA
-H2 Database
-Lombok
-Maven
-
-Frontend
-
-React 18
-React Router DOM
-Axios
-CSS3
-
-
-🚀 Getting Started
-
-Start the backend server (port 8080)
-Start the frontend development server (port 3000)
-Open http://localhost:3000 in your browser
-Navigate through the application to manage users
-
-
-🔧 Development
-
-Backend API runs on port 8080
-Frontend dev server runs on port 3000
-CORS is configured to allow requests from localhost:3000
-
-
-🤝 Contributing
-Contributions are welcome! Please fork this repository and submit a pull request.
-
-📜 License
-This project is licensed under the MIT License.
-
-<div align="center">
-  <img src="https://media.giphy.com/media/l0HlNaQ6gWfllcjDO/giphy.gif" width="200" />
-  <p>Made with ❤️ by <a href="https://github.com/yourusername">@yourusername</a></p>
-</div>
 ```

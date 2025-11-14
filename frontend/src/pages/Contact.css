@@ -33,7 +33,7 @@ body {
 
 /* === Container Principal (avec blobs animés du HTML) === */
 .contact-container {
-    padding: 60px 20px; /* Du HTML */
+    padding: 40px 20px 60px 20px; /* Du HTML */
     min-height: 100vh;
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* Du HTML */
     position: relative;
@@ -116,14 +116,36 @@ body {
 
 /* === Grille Principale (adapté pour MUI Grid) === */
 .contact-grid {
-    display: grid !important; /* Override MUI si besoin */
+    display: grid !important;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
     gap: 32px !important;
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 0 auto 0 0;
     position: relative;
     z-index: 2;
 }
+
+
+
+
+
+.contact-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
+    gap: 32px !important;
+    max-width: 1200px;
+    margin: 0 auto 0 0; /* AJOUT: Pas de margin-top par défaut */
+    position: relative;
+    z-index: 2;
+    margin-top: 20px; /* AJOUT: Espacement supplémentaire pour "baisser" les cartes */
+}
+
+
+
+
+
+
+
 
 /* === Cartes (Contact Info & Formulaire) - Glassmorphism (du HTML, override MUI Card) === */
 .contact-card {
